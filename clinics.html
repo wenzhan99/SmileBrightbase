@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smile Bright Dental — Clinics</title>
+  <style>
+    :root{
+      --primary:#1e4b86;
+      --primary-600:#173b6a;
+      --text:#243042;
+      --muted:#6b7a90;
+      --card:#ffffff;
+      --bg:#f5f7fb;
+      --ring:#e5e9f3;
+      --accent:#2b7fff;
+      --radius:14px;
+      --shadow:0 10px 24px rgba(22, 39, 76, .08);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font:16px/1.55 "Segoe UI",system-ui,-apple-system,Arial,Helvetica,sans-serif;
+      color:var(--text);
+      background:var(--bg);
+    }
+
+    /* Header / Nav */
+    .header{
+      position:sticky; top:0; z-index:10;
+      background:#fff; box-shadow:0 2px 10px rgba(0,0,0,.04);
+    }
+    .nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .navlinks {
+      flex: 1;
+      text-align: center;
+    }
+    .navlinks a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: #243042;
+      font-weight: 600;
+    }
+    .navlinks a:hover {
+      color: #1e4b86;
+    }
+    .brand {
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: #243042;
+    }
+    .btn {
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: none;
+      background: #1e4b86;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #173b6a;
+    }
+
+    /* Hero */
+    .hero{
+      background:var(--primary);
+      color:#fff; text-align:center; padding:62px 16px 72px;
+    }
+    .hero h1{margin:0 0 10px; font-size:2.4rem}
+    .hero p{margin:0 auto; max-width:830px; opacity:.92}
+
+    /* Page container */
+    .container{max-width:1200px; margin:0 auto; padding:36px 16px}
+
+    /* Cards grid */
+    .grid-3{
+      display:grid; gap:30px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:26px;
+      border:1px solid var(--ring);
+      transition: transform .2s ease;
+    }
+    .card:hover{transform:translateY(-4px)}
+    .card h3{margin:0 0 12px; font-size:1.3rem}
+    .card p{margin:0; color:var(--muted)}
+
+    /* Fix map images inside cards */
+    .card img.map {
+      width: 100%;          /* fit the card width */
+      height: 160px;        /* fixed height */
+      object-fit: cover;    /* crop nicely */
+      border-radius: 10px;  /* rounded corners */
+      margin-top: 12px;
+      display: block;       /* prevent spacing issues */
+    }
+
+    /* Section headings */
+    .section-title{
+      font-size:1.6rem; font-weight:900; margin:10px 0 24px; text-align:center;
+    }
+
+    /* Footer */
+    .footer{
+      background:#1e3d6c; color:#dfe7ff; margin-top:40px;
+    }
+    .footer .wrap{
+      max-width:1200px; margin:0 auto; padding:36px 16px;
+      display:grid; gap:24px; grid-template-columns: 2fr 1fr 1fr 1fr;
+    }
+    .footer h4{margin:0 0 10px}
+    .footer p, .footer a{color:#dfe7ff; opacity:.9; text-decoration:none}
+    .footbar{border-top:1px solid rgba(255,255,255,.2); text-align:center; padding:14px 12px; font-size:.92rem}
+    @media (max-width: 900px){
+      .footer .wrap{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width: 640px){
+      .footer .wrap{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="brand">Smile Bright Dental</div>
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="aboutus.html">About Us</a>
+      <a href="services.html">Services</a>
+      <a href="clinics.html" aria-current="page">Clinics</a>
+      <a href="FAQ.html">FAQ</a>
+    </div>
+    <a href="Book-Appointment.html"><button class="btn">Book Appointment</button></a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>Our Clinics</h1>
+    <p>Smile Bright Dental has multiple locations across Singapore to serve you better. Find a clinic near you below.</p>
+  </section>
+
+  <!-- Clinics -->
+  <main class="container">
+    <h2 class="section-title">Visit Our Branches</h2>
+    <div class="grid-3">
+      <div class="card">
+        <h3>Orchard Clinic (Main Clinic)</h3>
+        <p>123 Orchard Road, Singapore 238858</p>
+        <p>☎ +65 6234 5678</p>
+        <img src="orchardclinicmap.jpg" alt="Orchard Clinic Map" class="map">
+      </div>
+      <div class="card">
+        <h3>Marina Bay Clinic</h3>
+        <p>8 Marina Boulevard, Singapore 018981</p>
+        <p>☎ +65 6123 4567</p>
+        <img src="marinabayclinicmap.jpg" alt="Marina Bay Clinic Map" class="map">
+      </div>
+      <div class="card">
+        <h3>Bukit Timah Clinic</h3>
+        <p>501 Bukit Timah Road, Singapore 259760</p>
+        <p>☎ +65 6987 1234</p>
+        <img src="bukittimahclinicmap.jpg" alt="Bukit Timah Clinic Map" class="map">
+      </div>
+      <div class="card">
+        <h3>Tampines Clinic</h3>
+        <p>10 Tampines Central 1, Singapore 529536</p>
+        <p>☎ +65 6345 7890</p>
+        <img src="tampinesclinicmap.jpg" alt="Tampines Clinic Map" class="map">
+      </div>
+      <div class="card">
+        <h3>Jurong Clinic</h3>
+        <p>21 Jurong Gateway Road, Singapore 608546</p>
+        <p>☎ +65 6456 3210</p>
+        <img src="jurongclinicmap.jpg" alt="Jurong Clinic Map" class="map">
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="wrap">
+      <div>
+        <h4>Smile Bright Dental</h4>
+        <p>We’re committed to providing exceptional dental services in a comfortable and caring environment.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <p><a href="index.html">Home</a><br/>
+           <a href="aboutus.html">About Us</a><br/>
+           <a href="services.html">Services</a><br/>
+           <a href="clinics.html">Clinics</a><br/>
+           <a href="FAQ.html">FAQ</a><br/>
+           <a href="Book-Appointment.html">Book Appointment</a><br/>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <p><a href="services.html">General Dentistry</a><br/>
+           <a href="services.html">Cosmetic Dentistry</a><br/>
+           <a href="services.html">Orthodontics</a><br/>
+           <a href="services.html">Dental Implants</a><br/>
+           <a href="services.html">Pediatric Dentistry</a><br/>
+           <a href="services.html">Emergency Dentistry</a></p>
+      </div>
+      <div>
+        <h4>Contact Info</h4>
+        <p>123 Orchard Road<br/>Singapore 238858<br/>
+           Phone: +65 6234 5678<br/>
+           Email: info@smilebrightdental.sg</p>
+      </div>
+    </div>
+    <div class="footbar">
+      © 2025 Smile Bright Dental. All rights reserved. · <a href="#" style="color:#fff">Privacy Policy</a> · <a href="#" style="color:#fff">Terms of Service</a>
+    </div>
+  </footer>
+
+</body>
+</html>

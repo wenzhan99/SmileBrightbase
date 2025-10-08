@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FAQs — Smile Bright Dental</title>
+<meta name="description" content="Smile Bright Dental FAQs: pricing & longevity, process & procedures, patient transfers, and CHAS dental subsidies in Singapore." />
+<style>
+  :root{
+    --primary:#1e4b86;
+    --primary-600:#173b6a;
+    --text:#222f43;
+    --muted:#6b7a90;
+    --ring:#e7ebf3;
+    --bg:#f5f7fb;
+    --card:#fff;
+    --shadow:0 8px 24px rgba(20,40,80,.08);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Arial,Helvetica,sans-serif;color:var(--text)}
+
+  /* ===== Header / Nav ===== */
+  .header{position:sticky;top:0;z-index:20;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .nav{
+    max-width:1200px;margin:0 auto;padding:14px 20px;
+    display:flex;align-items:center;justify-content:space-between;
+    gap:20px;
+  }
+
+  /* Brand */
+  .brand{
+    font-weight:800;font-size:1.35rem;color:var(--text);
+    text-decoration:none;line-height:1;letter-spacing:-.2px;
+    white-space:nowrap;
+  }
+  .brand:link,.brand:visited{color:var(--text)}
+  .brand:focus-visible{outline:3px solid rgba(43,127,255,.35);outline-offset:2px;border-radius:6px}
+
+  /* Center links */
+  .navlinks{
+    flex:1;display:flex;justify-content:center;align-items:center;
+    gap:28px; /* spacing between links */
+    min-width:0;
+  }
+  .navlinks a{
+    text-decoration:none;color:var(--text);font-weight:600;
+    padding:8px 6px;border-radius:8px;white-space:nowrap;
+  }
+  .navlinks a:hover{color:var(--primary)}
+  .navlinks a:focus-visible{outline:3px solid rgba(43,127,255,.35);outline-offset:2px}
+
+  /* CTA button */
+  .btn{
+    padding:10px 18px;border-radius:999px;border:0;
+    background:var(--primary);color:#fff;font-weight:800; /* bold like screenshot */
+    cursor:pointer;text-decoration:none;display:inline-block;
+    white-space:nowrap;
+  }
+  .btn:hover{background:var(--primary-600)}
+  .btn:focus-visible{outline:3px solid rgba(43,127,255,.35);outline-offset:2px}
+
+  /* Dropdown */
+  .has-sub{position:relative}
+  .submenu{
+    position:absolute;left:50%;transform:translateX(-50%);
+    top:100%;min-width:240px;background:#fff;border:1px solid var(--ring);
+    border-radius:10px;box-shadow:var(--shadow);padding:8px;margin-top:8px;
+    list-style:none;display:none;z-index:50;
+  }
+  .submenu li a{display:block;padding:10px 12px;border-radius:8px;color:var(--text);text-decoration:none}
+  .submenu li a:hover{background:#f1f5f9;color:var(--primary-600)}
+  .has-sub:hover .submenu,.has-sub:focus-within .submenu{display:block}
+
+  /* ===== Hero ===== */
+  .hero{background:var(--primary);color:#fff;text-align:center;padding:62px 16px 72px}
+  .hero h1{margin:0 0 12px;font-size:2.4rem}
+  .hero p{margin:0 auto;max-width:820px;opacity:.95}
+
+  /* ===== Tabs ===== */
+  .container{max-width:1000px;margin:36px auto;padding:0 16px}
+  .tabs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:-60px auto 26px}
+  .tab{background:#fff;border:1px solid var(--ring);padding:10px 14px;border-radius:10px;font-weight:700;text-decoration:none;color:var(--text);box-shadow:var(--shadow)}
+  .tab.active,.tab:focus{outline:none;border-color:#a9c7ff;box-shadow:0 0 0 3px rgba(43,127,255,.15)}
+  .tab:hover{transform:translateY(-1px)}
+
+  /* ===== Sections ===== */
+  .faq-section{margin:30px 0 44px;scroll-margin-top:96px}
+  .faq-section h2{font-size:1.6rem;margin:0 0 14px;color:var(--primary)}
+  details{background:#fff;border:1px solid var(--ring);border-radius:10px;box-shadow:var(--shadow);padding:16px;margin:0 0 12px}
+  details summary{cursor:pointer;font-weight:700}
+  details[open]{border-color:var(--primary)}
+  details p{margin:.6rem 0 0}
+  ul{margin:.4rem 0 .2rem 1rem}
+
+/* ===== Footer ===== */
+.footer{
+  background:#1e3d6c;
+  color:#dfe7ff;
+  margin-top:40px;
+}
+.footer .wrap{
+  max-width:1200px;
+  margin:0 auto;
+  padding:32px 16px;
+}
+.footer-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:28px;
+}
+.footer h4{
+  margin:0 0 10px;
+  font-size:1rem;
+  color:#fff;
+}
+.footer p{margin:0; line-height:1.7}
+.footer a{color:#dfe7ff; text-decoration:none}
+.footer a:hover{text-decoration:underline}
+.footer .bar{
+  border-top:1px solid rgba(255,255,255,.15);
+  margin-top:18px; padding-top:12px;
+  text-align:center; font-size:.95rem;
+}
+@media (max-width:820px){
+  .footer-grid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:520px){
+  .footer-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header class="header">
+  <nav class="nav" aria-label="Main navigation">
+    <a href="home.html" class="brand">Smile Bright Dental</a>
+
+    <div class="navlinks">
+      <a href="home.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="services.html">Services</a>
+      <a href="clinics.html">Clinics</a>
+
+      <!-- FAQ with hover submenu -->
+      <div class="has-sub">
+        <a href="faq.html" aria-haspopup="true" aria-expanded="false" id="faqMenuButton">FAQ</a>
+        <ul class="submenu" aria-label="FAQ sub topics" aria-labelledby="faqMenuButton">
+          <li><a href="faq.html#pricing">Pricing &amp; Longevity</a></li>
+          <li><a href="faq.html#process">Process &amp; Procedures</a></li>
+          <li><a href="faq.html#transfers">Patient Transfers</a></li>
+          <li><a href="faq.html#chas">CHAS Dental Subsidies</a></li>
+        </ul>
+      </div>
+    </div> <!-- ✅ closed .navlinks -->
+
+    <a href="Book-Appointment.html" class="btn" role="button">Book Appointment</a>
+  </nav>
+</header>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <h1>Frequently Asked Questions</h1>
+  <p>Quick answers on pricing, treatment process, patient transfers and <strong>CHAS dental subsidies</strong>. Expand a question to read more.</p>
+</section>
+
+<!-- ===== Top Tabs ===== -->
+<div class="container">
+  <nav class="tabs" aria-label="FAQ sections">
+    <a class="tab" href="#pricing">Pricing &amp; Longevity</a>
+    <a class="tab" href="#process">Process &amp; Procedures</a>
+    <a class="tab" href="#transfers">Patient Transfers</a>
+    <a class="tab" href="#chas">CHAS Dental Subsidies</a>
+  </nav>
+</div>
+
+<!-- ===== Sections ===== -->
+<main class="container">
+  <!-- (content unchanged) -->
+  <!-- Pricing & Longevity -->
+  <section id="pricing" class="faq-section" tabindex="-1">
+    <h2>Pricing &amp; Longevity</h2>
+    <details>
+      <summary>Why choose Smile Bright Dental for orthodontic treatment?</summary>
+      <p>We offer multiple orthodontic options (metal, ceramic, lingual, and clear aligners), UK-trained dental surgeons with great chairside rapport, and transparent plans with no hidden costs.</p>
+    </details>
+    <details>
+      <summary>What is the cost of orthodontic treatment?</summary>
+      <p>No fixed price—plans are tailored to your case, schedule and budget. If you proceed with a full plan, we offset the initial consultation fee within your treatment cost.</p>
+    </details>
+    <details>
+      <summary>Do you guarantee the results?</summary>
+      <p>Medicine can’t promise absolutes, but we stand by our work. As long as you stay engaged with your plan, we’ll continue until we reach the agreed outcome—at no additional charge.</p>
+    </details>
+    <details>
+      <summary>What payment options do you have?</summary>
+      <p>Downpayment + monthly instalments are available. We accept major credit cards, NETS and bank transfers.</p>
+    </details>
+    <details>
+      <summary>How long do orthodontic treatments last?</summary>
+      <p>Case-dependent. With proper aftercare and retainer use, your smile should remain corrected.</p>
+    </details>
+  </section>
+
+  <!-- Process & Procedures -->
+  <section id="process" class="faq-section" tabindex="-1">
+    <h2>Process &amp; Procedures</h2>
+    <details>
+      <summary>Does orthodontic treatment hurt?</summary>
+      <p>Modern techniques keep discomfort minimal and manageable. Most patients are surprised by how smooth treatment feels.</p>
+    </details>
+    <details>
+      <summary>What special care will I need during treatment?</summary>
+      <p>Good hygiene and regular reviews (typically every ~6 weeks). This is different from your routine 6-month dental cleaning—both are important.</p>
+    </details>
+    <details>
+      <summary>What treatment options are there?</summary>
+      <p>We’ll assess whether metal braces, clear/ceramic braces, or Invisalign® aligners best suit your goals and lifestyle.</p>
+      <ul>
+        <li><strong>Metal braces</strong> — durable, widely used, excellent control.</li>
+        <li><strong>Clear/ceramic braces</strong> — tooth-coloured brackets for a subtler look.</li>
+        <li><strong>Invisalign® clear aligners</strong> — removable trays planned for staged tooth movement.</li>
+      </ul>
+    </details>
+    <details>
+      <summary>What problems can arise during treatment?</summary>
+      <p>Teeth may move faster/slower than planned. Regular monitoring allows timely adjustments and helps protect tooth roots.</p>
+    </details>
+    <details>
+      <summary>Will the process take a long time?</summary>
+      <p>New cases commonly take 12–24 months. Refinements/adjustments after prior treatment typically take 4–8 months.</p>
+    </details>
+    <details>
+      <summary>What technology is used?</summary>
+      <p>We use CBCT scanning (where appropriate), 3-shape intra-oral scanning and 3D printing to plan precise, efficient care.</p>
+    </details>
+  </section>
+
+  <!-- Patient Transfers -->
+  <section id="transfers" class="faq-section" tabindex="-1">
+    <h2>Patient Transfers</h2>
+    <details>
+      <summary>Do you accept orthodontic transfer patients?</summary>
+      <p>Yes. We’re experienced continuing treatment started elsewhere. At consult, we’ll estimate remaining duration and explain payment options. We can liaise with your previous clinic for records if needed.</p>
+    </details>
+    <details>
+      <summary>What if I leave Singapore before my treatment is completed?</summary>
+      <p>We’ll prepare the necessary records and the AAO transfer form to help your new orthodontist continue smoothly with minimal disruption.</p>
+    </details>
+  </section>
+
+  <!-- CHAS Dental Subsidies -->
+  <section id="chas" class="faq-section" tabindex="-1">
+    <h2>CHAS Dental Subsidies</h2>
+    <details>
+      <summary>What is the CHAS Dental Subsidy Scheme?</summary>
+      <p>The Community Health Assist Scheme (CHAS) provides dental subsidies to eligible Singaporeans, including Pioneer and Merdeka Generation groups, to reduce out-of-pocket costs for essential dental care.</p>
+    </details>
+    <details>
+      <summary>How does the CHAS subsidy process work?</summary>
+      <p>
+        1) <strong>Check eligibility</strong> — have a valid CHAS card (tier determines subsidy).<br/>
+        2) <strong>Choose a CHAS-accredited clinic</strong> — Smile Bright Dental participates in CHAS.<br/>
+        3) <strong>Book your appointment</strong> — let us know you’ll use CHAS.<br/>
+        4) <strong>Present your CHAS card</strong> — physical or digital (Singpass).<br/>
+        5) <strong>Receive treatment</strong> — subsidy is applied directly.<br/>
+        6) <strong>Pay the balance</strong> — after the subsidy deduction.
+      </p>
+    </details>
+    <details>
+      <summary>How much subsidy can I receive?</summary>
+      <p>Subsidy levels depend on your card type. CHAS Blue, CHAS Orange, Pioneer Generation and Merdeka Generation cards are eligible (CHAS Green is not). For current tables and criteria, see the
+        <a href="https://www.chas.sg" target="_blank" rel="noopener">official CHAS website</a>.
+      </p>
+    </details>
+  </section>
+</main>
+
+<script>
+  // Smooth scroll for tabs + active state sync on scroll
+  const tabs = Array.from(document.querySelectorAll('.tab'));
+  const ids  = tabs.map(t => t.getAttribute('href'));
+  const faqMenuBtn = document.getElementById('faqMenuButton');
+
+  if (faqMenuBtn) {
+    faqMenuBtn.addEventListener('click', () => {
+      const expanded = faqMenuBtn.getAttribute('aria-expanded') === 'true';
+      faqMenuBtn.setAttribute('aria-expanded', String(!expanded));
+    });
+    faqMenuBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') faqMenuBtn.setAttribute('aria-expanded','false');
+    });
+  }
+
+  tabs.forEach(tab=>{
+    tab.addEventListener('click', e=>{
+      const href = tab.getAttribute('href') || '';
+      if (href.startsWith('#')) {
+        e.preventDefault();
+        const target = document.querySelector(href);
+        if(!target) return;
+        target.scrollIntoView({ behavior:'smooth', block:'start' });
+      }
+    });
+  });
+
+  const sections = ids.map(id => document.querySelector(id)).filter(Boolean);
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        tabs.forEach(t => t.classList.toggle('active', t.getAttribute('href') === '#'+entry.target.id));
+        history.replaceState(null,'', '#'+entry.target.id);
+      }
+    });
+  }, { rootMargin:'-40% 0px -50% 0px', threshold:0.01 });
+  sections.forEach(s => obs.observe(s));
+
+  const initial = tabs.find(t => t.getAttribute('href') === location.hash) || tabs[0];
+  if (initial) initial.classList.add('active');
+</script>
+
+<!-- FAQ schema -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"What is the cost of orthodontic treatment?","acceptedAnswer":{"@type":"Answer","text":"Plans are tailored to each case, schedule and budget. If you proceed with a full plan, the initial consult fee is offset."}},
+  {"@type":"Question","name":"Do you accept orthodontic transfer patients?","acceptedAnswer":{"@type":"Answer","text":"Yes. We continue treatment started elsewhere, estimate remaining duration and explain payment options."}},
+  {"@type":"Question","name":"How much subsidy can I receive under CHAS?","acceptedAnswer":{"@type":"Answer","text":"It depends on card type (CHAS Blue/Orange, Pioneer, Merdeka). Subsidy is applied directly and you pay the balance."}}
+]}
+</script>
+<!-- ===== Footer ===== -->
+<footer class="footer" role="contentinfo">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h4>Smile Bright Dental</h4>
+        <p>We’re committed to providing exceptional dental services in a comfortable and caring environment.</p>
+      </div>
+
+      <div>
+        <h4>Quick Links</h4>
+        <p>
+          <a href="index.html">Home</a><br/>
+          <a href="aboutus.html">About Us</a><br/>
+          <a href="services.html">Services</a><br/>
+          <a href="clinics.html">Clinics</a><br/>
+          <a href="FAQ.html">FAQ</a><br/>
+          <a href="Book-Appointment.html">Book Appointment</a>
+        </p>
+      </div>
+
+      <div>
+        <h4>Services</h4>
+        <p>
+          <a href="services.html">General Dentistry</a><br/>
+          <a href="services.html">Cosmetic Dentistry</a><br/>
+          <a href="services.html">Orthodontics</a><br/>
+          <a href="services.html">Dental Implants</a><br/>
+          <a href="services.html">Pediatric Dentistry</a><br/>
+          <a href="services.html">Emergency Dentistry</a>
+        </p>
+      </div>
+
+      <div>
+        <h4>Contact Info</h4>
+        <p>
+          123 Orchard Road<br/>Singapore 238858<br/>
+          Phone: +65 6234 5678<br/>
+          Email: info@smilebrightdental.sg
+        </p>
+      </div>
+    </div>
+
+    <div class="bar">
+      © 2025 Smile Bright Dental. All rights reserved.
+      · <a href="privacy.html">Privacy Policy</a>
+      · <a href="terms.html">Terms of Service</a>
+    </div>
+  </div>
+</footer>>
+</body>
+</html>
