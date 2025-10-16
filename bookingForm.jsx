@@ -10,22 +10,52 @@ const initialState = {
   time: "",
   clinic: "",
   service: "",
+  experience: "", // New field for experience
   message: "",
   consent: false,
 };
 
 const validators = {
-  email: (v) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v),
+  // Name validation: only alphabet characters and spaces
+  name: (v) => /^[a-zA-Z\s]+$/.test(v.trim()) && v.trim().length > 0,
+  
+  // Enhanced email validation: username@domain with specific requirements
+  email: (v) => {
+    // Username part: word characters including hyphen and period
+    // Domain part: two to four extensions, last extension 2-3 characters
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$/;
+    if (!emailRegex.test(v)) return false;
+    
+    const [username, domain] = v.split('@');
+    const domainParts = domain.split('.');
+    
+    // Check domain has 2-4 extensions
+    if (domainParts.length < 2 || domainParts.length > 4) return false;
+    
+    // Check last extension has 2-3 characters
+    const lastExtension = domainParts[domainParts.length - 1];
+    if (lastExtension.length < 2 || lastExtension.length > 3) return false;
+    
+    return true;
+  },
+  
   phone: (v) => /^\+?\d{8,15}$/.test(v),
+  
+  // Date validation: cannot be from today or past (must be future)
   date: (v) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
     const d = new Date(v + "T00:00:00");
     if (Number.isNaN(d.getTime())) return false;
-    const today = new Date(); today.setHours(0,0,0,0);
-    return d >= today; // allow today and onward
+    const today = new Date(); 
+    today.setHours(0,0,0,0);
+    return d > today; // only allow future dates, not today
   },
+  
   // strict 24-hour HH:MM
   time: (v) => /^\d{2}:[0-5]\d$/.test(v.trim()),
+  
+  // Experience field cannot be empty
+  experience: (v) => v.trim().length > 0,
 };
 
 function FieldError({ children }) {
@@ -57,14 +87,26 @@ function BookingForm() {
 
   const validate = () => {
     const e = {};
-    if (!form.firstName.trim()) e.firstName = "First name cannot be empty.";
-    if (!form.lastName.trim()) e.lastName = "Last name cannot be empty.";
-    if (!validators.email(form.email)) e.email = "Enter a valid email (username@domain).";
+    
+    // Name validation: only alphabet characters and spaces
+    if (!validators.name(form.firstName)) e.firstName = "First name must contain only alphabet characters and spaces.";
+    if (!validators.name(form.lastName)) e.lastName = "Last name must contain only alphabet characters and spaces.";
+    
+    // Enhanced email validation
+    if (!validators.email(form.email)) e.email = "Enter a valid email. Username can contain letters, numbers, hyphens, and periods. Domain must have 2-4 extensions with the last one being 2-3 characters.";
+    
     if (!validators.phone(form.phone)) e.phone = "Enter digits only (8–15), optional '+'.";
-    if (!validators.date(form.date)) e.date = "Pick a valid date (today or later).";
+    
+    // Date validation: cannot be today or past
+    if (!validators.date(form.date)) e.date = "Pick a future date (not today or past).";
+    
     if (!validators.time(form.time)) e.time = "Enter a valid 24-hour time (e.g., 18:30).";
     if (!form.clinic) e.clinic = "Please choose a clinic.";
     if (!form.service) e.service = "Please choose a service.";
+    
+    // Experience field validation
+    if (!validators.experience(form.experience)) e.experience = "Experience field cannot be empty.";
+    
     if (!form.consent) e.consent = "You must agree before submitting.";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -205,6 +247,23 @@ function BookingForm() {
             <option>Wisdom Tooth Removal</option>
           </select>
           <FieldError>{errors.service}</FieldError>
+        </div>
+
+        <div style={{ gridColumn: "1 / -1" }}>
+          <label htmlFor="experience">Experience</label>
+          <textarea
+            id="experience"
+            name="experience"
+            rows="3"
+            placeholder="Please describe your dental experience or any previous treatments..."
+            value={form.experience}
+            onChange={onChange}
+            required
+          />
+          <small className="hint">
+            This field is required. Please share any relevant dental history or experience.
+          </small>
+          <FieldError>{errors.experience}</FieldError>
         </div>
 
         <div style={{ gridColumn: "1 / -1" }}>

@@ -21,56 +21,106 @@
   body{margin:0;background:var(--bg);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Arial,Helvetica,sans-serif;color:var(--text)}
 
   /* ===== Header / Nav ===== */
-  .header{position:sticky;top:0;z-index:20;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06)}
   .nav{
+    background:#fff;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+    position:sticky;top:0;z-index:100;
+  }
+  .nav-inner{
     max-width:1200px;margin:0 auto;padding:14px 20px;
     display:flex;align-items:center;justify-content:space-between;
-    gap:20px;
   }
 
   /* Brand */
   .brand{
-    font-weight:800;font-size:1.35rem;color:var(--text);
-    text-decoration:none;line-height:1;letter-spacing:-.2px;
-    white-space:nowrap;
+    font-weight:800;font-size:1.3rem;color:var(--text);
+    text-decoration:none;
   }
-  .brand:link,.brand:visited{color:var(--text)}
-  .brand:focus-visible{outline:3px solid rgba(43,127,255,.35);outline-offset:2px;border-radius:6px}
 
-  /* Center links */
+  /* Navigation Links */
   .navlinks{
-    flex:1;display:flex;justify-content:center;align-items:center;
-    gap:28px; /* spacing between links */
-    min-width:0;
+    display:flex;align-items:center;gap:5px;flex:1;justify-content:center;
   }
-  .navlinks a{
-    text-decoration:none;color:var(--text);font-weight:600;
-    padding:8px 6px;border-radius:8px;white-space:nowrap;
+
+  /* Nav items (with and without dropdowns) */
+  .nav-item{position:relative}
+  .nav-link{
+    display:block;padding:10px 15px;text-decoration:none;color:var(--text);
+    font-weight:600;border-radius:6px;transition:all 0.2s ease;cursor:pointer;
   }
-  .navlinks a:hover{color:var(--primary)}
-  .navlinks a:focus-visible{outline:3px solid rgba(43,127,255,.35);outline-offset:2px}
+  .nav-link:hover,
+  .nav-link:focus{color:var(--primary);background:rgba(30,75,134,0.05)}
+  .nav-link[aria-current="page"]{color:var(--primary)}
+
+  /* Dropdown indicator */
+  .nav-link.has-dropdown::after{
+    content:'▾';margin-left:4px;font-size:0.75em;display:inline-block;
+    transition:transform 0.2s ease;
+  }
+  .nav-item.active .nav-link.has-dropdown::after{transform:rotate(180deg)}
+
+  /* Dropdown menu */
+  .dropdown{
+    position:absolute;top:100%;left:0;min-width:220px;background:#fff;
+    border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:8px 0;
+    margin-top:8px;opacity:0;visibility:hidden;transform:translateY(-10px);
+    transition:all 0.25s ease;pointer-events:none;
+  }
+
+  /* Show dropdown on hover (desktop) */
+  .nav-item:hover .dropdown,
+  .nav-item:focus-within .dropdown,
+  .nav-item.active .dropdown{
+    opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto;
+  }
+
+  .dropdown a{
+    display:block;padding:10px 20px;color:var(--text);text-decoration:none;
+    font-weight:500;transition:all 0.15s ease;
+  }
+  .dropdown a:hover,
+  .dropdown a:focus{
+    background:rgba(30,75,134,0.08);color:var(--primary);padding-left:24px;
+  }
 
   /* CTA button */
   .btn{
     padding:10px 18px;border-radius:999px;border:0;
-    background:var(--primary);color:#fff;font-weight:800; /* bold like screenshot */
-    cursor:pointer;text-decoration:none;display:inline-block;
-    white-space:nowrap;
+    background:var(--primary);color:#fff;font-weight:700;
+    cursor:pointer;text-decoration:none;white-space:nowrap;
+    transition:background 0.2s ease;
   }
   .btn:hover{background:var(--primary-600)}
-  .btn:focus-visible{outline:3px solid rgba(43,127,255,.35);outline-offset:2px}
 
-  /* Dropdown */
-  .has-sub{position:relative}
-  .submenu{
-    position:absolute;left:50%;transform:translateX(-50%);
-    top:100%;min-width:240px;background:#fff;border:1px solid var(--ring);
-    border-radius:10px;box-shadow:var(--shadow);padding:8px;margin-top:8px;
-    list-style:none;display:none;z-index:50;
+  /* Mobile menu toggle */
+  .menu-toggle{
+    display:none;background:none;border:none;font-size:1.5rem;
+    cursor:pointer;padding:8px;color:var(--text);
   }
-  .submenu li a{display:block;padding:10px 12px;border-radius:8px;color:var(--text);text-decoration:none}
-  .submenu li a:hover{background:#f1f5f9;color:var(--primary-600)}
-  .has-sub:hover .submenu,.has-sub:focus-within .submenu{display:block}
+
+  /* Mobile Styles */
+  @media (max-width:900px){
+    .menu-toggle{display:block}
+    .navlinks{
+      position:fixed;top:62px;left:0;right:0;background:#fff;
+      flex-direction:column;align-items:stretch;gap:0;padding:16px 0;
+      box-shadow:0 8px 24px rgba(0,0,0,.1);max-height:0;overflow:hidden;
+      transition:max-height 0.3s ease;
+    }
+    .navlinks.active{max-height:600px}
+    .nav-item{width:100%}
+    .nav-link{padding:12px 20px;border-radius:0}
+    .dropdown{
+      position:static;box-shadow:none;border-radius:0;
+      background:rgba(30,75,134,0.03);margin:0;padding:0;
+      max-height:0;overflow:hidden;transition:max-height 0.3s ease;
+    }
+    .nav-item.active .dropdown{max-height:400px}
+    .dropdown a{padding:10px 20px 10px 40px}
+    .dropdown a:hover,
+    .dropdown a:focus{padding-left:44px}
+    .nav-cta{padding:12px 20px}
+  }
 
   /* ===== Hero ===== */
   .hero{background:var(--primary);color:#fff;text-align:center;padding:62px 16px 72px}
@@ -133,31 +183,117 @@
 <body>
 
 <!-- ===== Header ===== -->
-<header class="header">
-  <nav class="nav" aria-label="Main navigation">
-    <a href="home.html" class="brand">Smile Bright Dental</a>
-
-    <div class="navlinks">
-      <a href="home.html">Home</a>
-      <a href="about.html">About Us</a>
-      <a href="services.html">Services</a>
-      <a href="clinics.html">Clinics</a>
-
-      <!-- FAQ with hover submenu -->
-      <div class="has-sub">
-        <a href="faq.html" aria-haspopup="true" aria-expanded="false" id="faqMenuButton">FAQ</a>
-        <ul class="submenu" aria-label="FAQ sub topics" aria-labelledby="faqMenuButton">
-          <li><a href="faq.html#pricing">Pricing &amp; Longevity</a></li>
-          <li><a href="faq.html#process">Process &amp; Procedures</a></li>
-          <li><a href="faq.html#transfers">Patient Transfers</a></li>
-          <li><a href="faq.html#chas">CHAS Dental Subsidies</a></li>
-        </ul>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand">Smile Bright Dental</a>
+    
+    <button class="menu-toggle" aria-label="Toggle navigation menu" onclick="toggleMobileMenu()">
+      ☰
+    </button>
+    
+    <div class="navlinks" id="navMenu">
+      <div class="nav-item">
+        <a href="index.html" class="nav-link">Home</a>
       </div>
-    </div> <!-- ✅ closed .navlinks -->
+      
+      <div class="nav-item">
+        <a href="aboutus.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+          About Us
+        </a>
+        <div class="dropdown" role="menu">
+          <a href="aboutus.html#team" role="menuitem">Our Team</a>
+          <a href="aboutus.html#mission" role="menuitem">Mission & Values</a>
+          <a href="aboutus.html#careers" role="menuitem">Careers</a>
+          <a href="aboutus.html#contact" role="menuitem">Contact Us</a>
+        </div>
+      </div>
+      
+      <div class="nav-item">
+        <a href="services.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+          Services
+        </a>
+        <div class="dropdown" role="menu">
+          <a href="services.html#general" role="menuitem">General Dentistry</a>
+          <a href="services.html#scaling" role="menuitem">Scaling & Polishing</a>
+          <a href="services.html#braces" role="menuitem">Braces & Invisalign</a>
+          <a href="services.html#whitening" role="menuitem">Teeth Whitening</a>
+          <a href="services.html#implants" role="menuitem">Dental Implants</a>
+          <a href="services.html#wisdom" role="menuitem">Wisdom Tooth Surgery</a>
+        </div>
+      </div>
+      
+      <div class="nav-item">
+        <a href="clinics.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+          Clinics
+        </a>
+        <div class="dropdown" role="menu">
+          <a href="clinics.html#locations" role="menuitem">Locations</a>
+          <a href="clinics.html#hours" role="menuitem">Opening Hours</a>
+          <a href="clinics.html#insurance" role="menuitem">Insurance & CHAS</a>
+          <a href="Book-Appointment.html" role="menuitem">Book Appointment</a>
+        </div>
+      </div>
+      
+      <div class="nav-item">
+        <a href="FAQ.html" class="nav-link" aria-current="page">FAQ</a>
+      </div>
+      
+      <div class="nav-cta">
+        <a href="Book-Appointment.html"><button class="btn">Book Appointment</button></a>
+      </div>
+    </div>
+  </div>
+</nav>
 
-    <a href="Book-Appointment.html" class="btn" role="button">Book Appointment</a>
-  </nav>
-</header>
+<script>
+  // Mobile menu toggle
+  function toggleMobileMenu() {
+    const navMenu = document.getElementById('navMenu');
+    navMenu.classList.toggle('active');
+  }
+  
+  // Dropdown toggle for mobile/touch devices
+  function toggleDropdown(event, element) {
+    // Only handle clicks on touch devices or when menu is in mobile mode
+    if (window.innerWidth <= 900 || 'ontouchstart' in window) {
+      event.preventDefault();
+      const navItem = element.parentElement;
+      const wasActive = navItem.classList.contains('active');
+      
+      // Close all other dropdowns
+      document.querySelectorAll('.nav-item.active').forEach(item => {
+        if (item !== navItem) {
+          item.classList.remove('active');
+          item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+        }
+      });
+      
+      // Toggle current dropdown
+      navItem.classList.toggle('active');
+      element.setAttribute('aria-expanded', !wasActive);
+    }
+  }
+  
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', function(event) {
+    if (!event.target.closest('.nav-item')) {
+      document.querySelectorAll('.nav-item.active').forEach(item => {
+        item.classList.remove('active');
+        item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+      });
+    }
+  });
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      document.querySelectorAll('.nav-item.active').forEach(item => {
+        item.classList.remove('active');
+        item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+      });
+    }
+  });
+</script>
 
 <!-- ===== Hero ===== -->
 <section class="hero">
@@ -281,17 +417,6 @@
   // Smooth scroll for tabs + active state sync on scroll
   const tabs = Array.from(document.querySelectorAll('.tab'));
   const ids  = tabs.map(t => t.getAttribute('href'));
-  const faqMenuBtn = document.getElementById('faqMenuButton');
-
-  if (faqMenuBtn) {
-    faqMenuBtn.addEventListener('click', () => {
-      const expanded = faqMenuBtn.getAttribute('aria-expanded') === 'true';
-      faqMenuBtn.setAttribute('aria-expanded', String(!expanded));
-    });
-    faqMenuBtn.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') faqMenuBtn.setAttribute('aria-expanded','false');
-    });
-  }
 
   tabs.forEach(tab=>{
     tab.addEventListener('click', e=>{

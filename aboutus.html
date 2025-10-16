@@ -29,6 +29,13 @@
 
     /* Nav */
     .nav {
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-inner {
       max-width: 1200px;
       margin: 0 auto;
       padding: 14px 20px;
@@ -36,29 +43,189 @@
       align-items: center;
       justify-content: space-between;
     }
-    .navlinks {flex: 1; text-align: center;}
-    .navlinks a {
-      margin: 0 15px;
-      text-decoration: none;
-      color: #243042;
-      font-weight: 600;
-    }
-    .navlinks a:hover {color: #1e4b86;}
     .brand {
       font-weight: 800;
       font-size: 1.3rem;
       color: #243042;
+      text-decoration: none;
     }
+    
+    /* Navigation Links */
+    .navlinks {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex: 1;
+      justify-content: center;
+    }
+    
+    /* Nav items (with and without dropdowns) */
+    .nav-item {
+      position: relative;
+    }
+    .nav-link {
+      display: block;
+      padding: 10px 15px;
+      text-decoration: none;
+      color: #243042;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .nav-link:hover,
+    .nav-link:focus {
+      color: #1e4b86;
+      background: rgba(30, 75, 134, 0.05);
+    }
+    .nav-link[aria-current="page"] {
+      color: #1e4b86;
+    }
+    
+    /* Dropdown indicator */
+    .nav-link.has-dropdown::after {
+      content: '▾';
+      margin-left: 4px;
+      font-size: 0.75em;
+      display: inline-block;
+      transition: transform 0.2s ease;
+    }
+    .nav-item.active .nav-link.has-dropdown::after {
+      transform: rotate(180deg);
+    }
+    
+    /* Dropdown menu */
+    .dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 220px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.12);
+      padding: 8px 0;
+      margin-top: 8px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+    }
+    
+    /* Show dropdown on hover (desktop) */
+    .nav-item:hover .dropdown,
+    .nav-item:focus-within .dropdown,
+    .nav-item.active .dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    
+    .dropdown a {
+      display: block;
+      padding: 10px 20px;
+      color: #243042;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+    .dropdown a:hover,
+    .dropdown a:focus {
+      background: rgba(30, 75, 134, 0.08);
+      color: #1e4b86;
+      padding-left: 24px;
+    }
+    
+    /* Book Appointment Button */
     .btn {
-      padding: 10px 16px;
+      padding: 10px 18px;
       border-radius: 999px;
       border: none;
       background: #1e4b86;
       color: #fff;
       font-weight: 700;
       cursor: pointer;
+      transition: background 0.2s ease;
+      white-space: nowrap;
     }
     .btn:hover {background: #173b6a;}
+    
+    /* Mobile menu toggle */
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 8px;
+      color: #243042;
+    }
+    
+    /* Mobile Styles */
+    @media (max-width: 900px) {
+      .menu-toggle {
+        display: block;
+      }
+      
+      .navlinks {
+        position: fixed;
+        top: 62px;
+        left: 0;
+        right: 0;
+        background: #fff;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 16px 0;
+        box-shadow: 0 8px 24px rgba(0,0,0,.1);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+      
+      .navlinks.active {
+        max-height: 600px;
+      }
+      
+      .nav-item {
+        width: 100%;
+      }
+      
+      .nav-link {
+        padding: 12px 20px;
+        border-radius: 0;
+      }
+      
+      .dropdown {
+        position: static;
+        box-shadow: none;
+        border-radius: 0;
+        background: rgba(30, 75, 134, 0.03);
+        margin: 0;
+        padding: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+      
+      .nav-item.active .dropdown {
+        max-height: 400px;
+      }
+      
+      .dropdown a {
+        padding: 10px 20px 10px 40px;
+      }
+      
+      .dropdown a:hover,
+      .dropdown a:focus {
+        padding-left: 44px;
+      }
+      
+      .nav-cta {
+        padding: 12px 20px;
+      }
+    }
 
     /* Hero */
     .hero{
@@ -123,16 +290,116 @@
 
   <!-- Navigation -->
   <nav class="nav">
-    <div class="brand">Smile Bright Dental</div>
-    <div class="navlinks">
-      <a href="index.html">Home</a>
-      <a href="aboutus.html" aria-current="page">About Us</a>
-      <a href="services.html">Services</a>
-      <a href="clinics.html">Clinics</a>
-      <a href="FAQ.html">FAQ</a>
+    <div class="nav-inner">
+      <a href="index.html" class="brand">Smile Bright Dental</a>
+      
+      <button class="menu-toggle" aria-label="Toggle navigation menu" onclick="toggleMobileMenu()">
+        ☰
+      </button>
+      
+      <div class="navlinks" id="navMenu">
+        <div class="nav-item">
+          <a href="index.html" class="nav-link">Home</a>
+        </div>
+        
+        <div class="nav-item">
+          <a href="aboutus.html" class="nav-link has-dropdown" aria-current="page" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+            About Us
+          </a>
+          <div class="dropdown" role="menu">
+            <a href="aboutus.html#team" role="menuitem">Our Team</a>
+            <a href="aboutus.html#mission" role="menuitem">Mission & Values</a>
+            <a href="aboutus.html#careers" role="menuitem">Careers</a>
+            <a href="aboutus.html#contact" role="menuitem">Contact Us</a>
+          </div>
+        </div>
+        
+        <div class="nav-item">
+          <a href="services.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+            Services
+          </a>
+          <div class="dropdown" role="menu">
+            <a href="services.html#general" role="menuitem">General Dentistry</a>
+            <a href="services.html#scaling" role="menuitem">Scaling & Polishing</a>
+            <a href="services.html#braces" role="menuitem">Braces & Invisalign</a>
+            <a href="services.html#whitening" role="menuitem">Teeth Whitening</a>
+            <a href="services.html#implants" role="menuitem">Dental Implants</a>
+            <a href="services.html#wisdom" role="menuitem">Wisdom Tooth Surgery</a>
+          </div>
+        </div>
+        
+        <div class="nav-item">
+          <a href="clinics.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+            Clinics
+          </a>
+          <div class="dropdown" role="menu">
+            <a href="clinics.html#locations" role="menuitem">Locations</a>
+            <a href="clinics.html#hours" role="menuitem">Opening Hours</a>
+            <a href="clinics.html#insurance" role="menuitem">Insurance & CHAS</a>
+            <a href="Book-Appointment.html" role="menuitem">Book Appointment</a>
+          </div>
+        </div>
+        
+        <div class="nav-item">
+          <a href="FAQ.html" class="nav-link">FAQ</a>
+        </div>
+        
+        <div class="nav-cta">
+          <a href="Book-Appointment.html"><button class="btn">Book Appointment</button></a>
+        </div>
+      </div>
     </div>
-    <a href="Book-Appointment.html"><button class="btn">Book Appointment</button></a>
   </nav>
+  
+  <script>
+    // Mobile menu toggle
+    function toggleMobileMenu() {
+      const navMenu = document.getElementById('navMenu');
+      navMenu.classList.toggle('active');
+    }
+    
+    // Dropdown toggle for mobile/touch devices
+    function toggleDropdown(event, element) {
+      // Only handle clicks on touch devices or when menu is in mobile mode
+      if (window.innerWidth <= 900 || 'ontouchstart' in window) {
+        event.preventDefault();
+        const navItem = element.parentElement;
+        const wasActive = navItem.classList.contains('active');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.nav-item.active').forEach(item => {
+          if (item !== navItem) {
+            item.classList.remove('active');
+            item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+          }
+        });
+        
+        // Toggle current dropdown
+        navItem.classList.toggle('active');
+        element.setAttribute('aria-expanded', !wasActive);
+      }
+    }
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!event.target.closest('.nav-item')) {
+        document.querySelectorAll('.nav-item.active').forEach(item => {
+          item.classList.remove('active');
+          item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        document.querySelectorAll('.nav-item.active').forEach(item => {
+          item.classList.remove('active');
+          item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+  </script>
 
   <!-- Hero -->
   <section class="hero">
