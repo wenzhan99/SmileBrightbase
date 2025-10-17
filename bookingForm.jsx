@@ -69,10 +69,10 @@ function BookingForm() {
   const [submitting, setSubmitting] = React.useState(false);
   const [serverMsg, setServerMsg] = React.useState("");
 
-  // 24h times every 15 minutes
+  // Business hours: 09:00 to 18:00 every 15 minutes
   const times = React.useMemo(() => {
     const out = [];
-    for (let h = 0; h < 24; h++) {
+    for (let h = 9; h <= 18; h++) {
       for (let m = 0; m < 60; m += 15) {
         out.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
       }
@@ -131,9 +131,23 @@ function BookingForm() {
       });
 
       const text = await res.text();
-      setServerMsg(text || "Submitted successfully.");
-      setForm(initialState);
-      setErrors({});
+      
+      // Try to parse as JSON first
+      try {
+        const data = JSON.parse(text);
+        if (data.ok && data.id) {
+          setServerMsg(`✅ Appointment booked successfully! Reference ID: ${data.id}`);
+          setForm(initialState);
+          setErrors({});
+        } else {
+          setServerMsg("❌ Booking failed. Please try again.");
+        }
+      } catch {
+        // If not JSON, treat as plain text
+        setServerMsg(text || "✅ Submitted successfully.");
+        setForm(initialState);
+        setErrors({});
+      }
     } catch {
       setServerMsg("Sorry, something went wrong. Please try again.");
     } finally {
