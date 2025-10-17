@@ -1,13 +1,8 @@
 <?php
-$host = '127.0.0.1';
-$user = 'root';
-$pass = '';
-$db   = 'smilebright';
-$port = 3307;
-
-$conn = new mysqli($host, $user, $pass, $db, $port);
-if ($conn->connect_error) {
+$mysqli = new mysqli('127.0.0.1', 'root', '', 'smilebright', 3306);
+if ($mysqli->connect_errno) {
   http_response_code(500);
-  exit('Database connection failed.');
+  die('DB connect failed: ' . $mysqli->connect_error);
 }
-$conn->set_charset('utf8mb4');
+$mysqli->set_charset('utf8mb4');
+?>
