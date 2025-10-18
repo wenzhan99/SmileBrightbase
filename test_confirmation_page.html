@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Confirmation Page - SmileBright</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 50px; }
+        .test-box { background: #f0f0f0; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>SmileBright - Test Confirmation Page</h1>
+    
+    <div class="test-box">
+        <h2>Direct Confirmation Page Test</h2>
+        <p>This page tests if the confirmation page loads correctly with a known booking.</p>
+        
+        <div id="testResult">
+            <p>Loading booking details...</p>
+        </div>
+    </div>
+    
+    <div class="test-box">
+        <h2>Manual Test URLs</h2>
+        <p>You can also test these URLs manually:</p>
+        <ul>
+            <li><a href="find-booking.php">Find My Booking Page</a></li>
+            <li><a href="Book-Appointment.html">Book Appointment Page</a></li>
+            <li><a href="index.html">Home Page</a></li>
+        </ul>
+    </div>
+
+    <script>
+        // Test the confirmation page with the latest booking
+        async function testConfirmation() {
+            try {
+                // First, get the latest booking
+                const response = await fetch('test_urls.php');
+                const text = await response.text();
+                
+                // Extract the confirmation URL from the text
+                const urlMatch = text.match(/http:\/\/localhost\/SmileBright\/confirm\.php\?ref=([^&]+)&token=([^\s]+)/);
+                
+                if (urlMatch) {
+                    const ref = urlMatch[1];
+                    const token = urlMatch[2];
+                    
+                    // Test the confirmation page
+                    const confirmResponse = await fetch(`get_booking.php?ref=${ref}&token=${token}`);
+                    const confirmData = await confirmResponse.json();
+                    
+                    const resultDiv = document.getElementById('testResult');
+                    
+                    if (confirmData.success) {
+                        resultDiv.innerHTML = `
+                            <div class="success">
+                                <h3>✓ Confirmation Page Test Successful!</h3>
+                                <p><strong>Reference ID:</strong> ${confirmData.booking.reference_id}</p>
+                                <p><strong>Name:</strong> ${confirmData.booking.full_name}</p>
+                                <p><strong>Email:</strong> ${confirmData.booking.email}</p>
+                                <p><strong>Clinic:</strong> ${confirmData.booking.preferred_clinic}</p>
+                                <p><strong>Service:</strong> ${confirmData.booking.service}</p>
+                                <p><strong>Date:</strong> ${confirmData.booking.preferred_date}</p>
+                                <p><strong>Time:</strong> ${confirmData.booking.preferred_time}</p>
+                                <p><a href="confirm.php?ref=${ref}&token=${token}" target="_blank">Open Confirmation Page</a></p>
+                            </div>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `
+                            <div class="error">
+                                <h3>✗ Confirmation Page Test Failed</h3>
+                                <p>Error: ${confirmData.error}</p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    document.getElementById('testResult').innerHTML = `
+                        <div class="error">
+                            <h3>✗ No booking found</h3>
+                            <p>Please create a booking first.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('testResult').innerHTML = `
+                    <div class="error">
+                        <h3>✗ Test Error</h3>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Run the test when the page loads
+        testConfirmation();
+    </script>
+</body>
+</html>

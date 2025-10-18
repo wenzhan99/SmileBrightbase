@@ -235,16 +235,23 @@
                     body: `referenceId=${encodeURIComponent(referenceId)}&email=${encodeURIComponent(email)}`
                 });
                 
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
                 const data = await response.json();
+                console.log('Response data:', data);
                 
                 if (data.success) {
-                    // Redirect to reschedule page
-                    window.location.href = `reschedule.php?ref=${data.booking.reference_id}&token=${data.booking.reschedule_token}`;
+                    // Redirect to confirmation page
+                    const redirectUrl = `confirm.php?ref=${data.booking.reference_id}&token=${data.booking.reschedule_token}`;
+                    console.log('Redirecting to:', redirectUrl);
+                    window.location.href = redirectUrl;
                 } else {
                     errorDiv.textContent = data.error || 'Booking not found. Please check your details.';
                     errorDiv.style.display = 'block';
                 }
             } catch (error) {
+                console.error('Error:', error);
                 errorDiv.textContent = 'An error occurred. Please try again.';
                 errorDiv.style.display = 'block';
             } finally {
