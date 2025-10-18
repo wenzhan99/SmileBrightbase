@@ -10,6 +10,7 @@ $service = $_POST['service'] ?? '';
 $preferred_date = $_POST['preferred_date'] ?? '';
 $preferred_time = $_POST['preferred_time'] ?? '';
 $message = $_POST['message'] ?? null;
+$terms_accepted = ($_POST['termsAccepted'] ?? '0') === '1';
 
 // If using React form, map the field names
 if (!$full_name && isset($_POST['firstName']) && isset($_POST['lastName'])) {
@@ -32,8 +33,37 @@ if (!$full_name || !$email || !$phone || !$preferred_clinic || !$service || !$pr
   exit;
 }
 
-$stmt = $mysqli->prepare('INSERT INTO bookings (full_name,email,phone,preferred_clinic,service,preferred_date,preferred_time,message) VALUES (?,?,?,?,?,?,?,?)');
-$stmt->bind_param('ssssssss', $full_name, $email, $phone, $preferred_clinic, $service, $preferred_date, $preferred_time, $message);
+if (!$terms_accepted) {
+  http_response_code(422);
+  echo 'Terms & Conditions must be accepted';
+  exit;
+}
+
+// Generate reference ID and reschedule token
+$reference_id = 'SB' . str_pad(rand(100000, 999999), 6, '0', STR_PAD_LEFT);
+$reschedule_token = hash('sha256', uniqid(rand(), true));
+$token_expires_at = date('Y-m-d H:i:s', strtotime('+30 days'));
+
+// Ensure reference ID is unique
+$stmt_check = $mysqli->prepare('SELECT COUNT(*) FROM bookings WHERE reference_id = ?');
+$stmt_check->bind_param('s', $reference_id);
+$stmt_check->execute();
+$stmt_check->bind_result($count);
+$stmt_check->fetch();
+$stmt_check->close();
+
+while ($count > 0) {
+    $reference_id = 'SB' . str_pad(rand(100000, 999999), 6, '0', STR_PAD_LEFT);
+    $stmt_check = $mysqli->prepare('SELECT COUNT(*) FROM bookings WHERE reference_id = ?');
+    $stmt_check->bind_param('s', $reference_id);
+    $stmt_check->execute();
+    $stmt_check->bind_result($count);
+    $stmt_check->fetch();
+    $stmt_check->close();
+}
+
+$stmt = $mysqli->prepare('INSERT INTO bookings (reference_id, full_name, email, phone, preferred_clinic, service, preferred_date, preferred_time, message, reschedule_token, token_expires_at, terms_accepted) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)');
+$stmt->bind_param('sssssssssssi', $reference_id, $full_name, $email, $phone, $preferred_clinic, $service, $preferred_date, $preferred_time, $message, $reschedule_token, $token_expires_at, $terms_accepted);
 
 if (!$stmt->execute()) {
   http_response_code(500);
@@ -41,6 +71,13 @@ if (!$stmt->execute()) {
   exit;
 }
 
+$booking_id = $mysqli->insert_id;
+
 header('Content-Type: application/json');
-echo json_encode(['ok' => true, 'id' => $mysqli->insert_id]);
+echo json_encode([
+    'ok' => true, 
+    'id' => $booking_id,
+    'reference_id' => $reference_id,
+    'confirmation_url' => "confirm.php?ref={$reference_id}&token={$reschedule_token}"
+]);
 ?>

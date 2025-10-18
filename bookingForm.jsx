@@ -13,6 +13,7 @@ const initialState = {
   experience: "", // New field for experience
   message: "",
   consent: false,
+  termsAccepted: false, // Terms & Conditions acceptance
 };
 
 const validators = {
@@ -56,6 +57,9 @@ const validators = {
   
   // Experience field cannot be empty
   experience: (v) => v.trim().length > 0,
+  
+  // Terms & Conditions must be accepted
+  termsAccepted: (v) => v === true,
 };
 
 function FieldError({ children }) {
@@ -107,6 +111,8 @@ function BookingForm() {
     // Experience field validation
     if (!validators.experience(form.experience)) e.experience = "Experience field cannot be empty.";
     
+    if (!validators.termsAccepted(form.termsAccepted)) e.termsAccepted = "You must accept the Terms & Conditions to proceed.";
+    
     if (!form.consent) e.consent = "You must agree before submitting.";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -136,9 +142,14 @@ function BookingForm() {
       try {
         const data = JSON.parse(text);
         if (data.ok && data.id) {
-          setServerMsg(`✅ Appointment booked successfully! Reference ID: ${data.id}`);
+          setServerMsg(`✅ Appointment booked successfully! Reference: ${data.reference_id}`);
           setForm(initialState);
           setErrors({});
+          
+          // Redirect to confirmation page after a short delay
+          setTimeout(() => {
+            window.location.href = data.confirmation_url;
+          }, 2000);
         } else {
           setServerMsg("❌ Booking failed. Please try again.");
         }
@@ -302,11 +313,25 @@ function BookingForm() {
         </div>
         <FieldError>{errors.consent}</FieldError>
 
+        <div style={{ gridColumn: "1 / -1", display: "flex", gap: 12, alignItems: "center" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <input type="checkbox" name="termsAccepted" checked={form.termsAccepted} onChange={onChange} />
+            I agree to the Terms & Conditions, including the 12-hour rescheduling policy and clinic adjustment rights.
+          </label>
+        </div>
+        <FieldError>{errors.termsAccepted}</FieldError>
+
         <div style={{ gridColumn: "1 / -1" }}>
           <div style={{
             height: 78, border: "1px dashed var(--ring)", borderRadius: 10,
             display: "flex", alignItems: "center", justifyContent: "center", color: "var(--muted)"
           }}>reCAPTCHA placeholder</div>
+        </div>
+
+        <div style={{ gridColumn: "1 / -1", textAlign: "center", marginTop: 20 }}>
+          <p style={{ color: "var(--muted)", fontSize: "14px" }}>
+            Already booked? <a href="find-booking.php" style={{ color: "var(--primary)", textDecoration: "none", fontWeight: "600" }}>Reschedule here</a>
+          </p>
         </div>
 
         <div style={{ gridColumn: "1 / -1" }}>
