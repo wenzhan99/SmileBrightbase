@@ -1,0 +1,42 @@
+APPOINTMENT ADJUSTED 📅
+Your appointment details have been updated
+
+Hi {{full_name}},
+
+We've made some adjustments to your appointment. Here's what changed:
+
+CHANGE SUMMARY
+==============
+
+{{#if old_date}}
+📅 Date/Time: {{old_date}} {{old_time}} → {{date}} {{time}}
+{{/if}}
+
+{{#if old_clinic}}
+🏥 Clinic: {{old_clinic}} → {{clinic_info.name}}
+{{/if}}
+
+📞 Reference ID: {{reference_id}}
+
+{{#if reason}}
+REASON FOR CHANGE
+=================
+{{reason}}
+{{/if}}
+
+VIEW YOUR UPDATED APPOINTMENT
+=============================
+{{view_url}}
+
+QUESTIONS ABOUT THIS CHANGE?
+============================
+Please contact us at:
+{{support_phone}} or {{support_email}}
+
+---
+Reference ID: {{reference_id}} • Updated {{sent_at}}
+— SmileBright Dental
+Your trusted dental care provider in Singapore
+
+This is an automated notification email.
+For inquiries, contact us at {{support_email}}

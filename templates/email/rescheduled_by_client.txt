@@ -1,0 +1,37 @@
+RESCHEDULE CONFIRMED ✅
+Your appointment has been successfully updated
+
+Hi {{full_name}},
+
+Great news! Your appointment reschedule has been confirmed. Here are your updated details:
+
+UPDATED APPOINTMENT DETAILS
+===========================
+
+📅 New Date & Time: {{date}} at {{time}} ({{timezone}} timezone)
+🏥 Clinic: {{clinic_info.name}}
+   {{clinic_info.address}}
+🦷 Service: {{service}}
+📞 Reference ID: {{reference_id}}
+
+IMPORTANT REMINDER
+==================
+Please arrive 10 minutes before your appointment time. 
+If you need to make any further changes, please contact us at least 24 hours in advance.
+
+VIEW YOUR APPOINTMENT
+=====================
+{{view_url}}
+
+NEED ASSISTANCE?
+================
+Contact us at:
+{{support_phone}} or {{support_email}}
+
+---
+Reference ID: {{reference_id}} • Rescheduled {{sent_at}}
+— SmileBright Dental
+Your trusted dental care provider in Singapore
+
+This is an automated confirmation email.
+For inquiries, contact us at {{support_email}}

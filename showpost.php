@@ -1,5 +1,6 @@
 <?php
 require __DIR__ . '/db.php';
+require __DIR__ . '/notification_bridge.php';
 
 // Handle both React form field names and your specified field names
 $full_name = $_POST['full_name'] ?? '';
@@ -73,11 +74,41 @@ if (!$stmt->execute()) {
 
 $booking_id = $mysqli->insert_id;
 
+// Prepare booking data for notifications
+$bookingData = [
+    'id' => $booking_id,
+    'reference_id' => $reference_id,
+    'full_name' => $full_name,
+    'email' => $email,
+    'phone' => $phone,
+    'preferred_clinic' => $preferred_clinic,
+    'service' => $service,
+    'preferred_date' => $preferred_date,
+    'preferred_time' => $preferred_time,
+    'message' => $message,
+    'reschedule_token' => $reschedule_token,
+    'token_expires_at' => $token_expires_at
+];
+
+// Send notification via Node.js service (non-blocking)
+try {
+    $notificationResult = sendBookingNotification($bookingData, 'booking_created');
+    if ($notificationResult) {
+        error_log("Booking notification sent successfully for reference: $reference_id");
+    } else {
+        error_log("Failed to send booking notification for reference: $reference_id");
+    }
+} catch (Exception $e) {
+    error_log("Notification error for booking $reference_id: " . $e->getMessage());
+    // Don't fail the booking if notification fails
+}
+
 header('Content-Type: application/json');
 echo json_encode([
     'ok' => true, 
     'id' => $booking_id,
     'reference_id' => $reference_id,
-    'confirmation_url' => "confirm.php?ref={$reference_id}&token={$reschedule_token}"
+    'confirmation_url' => "confirm.php?ref={$reference_id}&token={$reschedule_token}",
+    'notification_sent' => $notificationResult ?? false
 ]);
 ?>
