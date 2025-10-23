@@ -1,0 +1,14 @@
+# Enable directory browsing (optional)
+Options +Indexes
+
+# Set default index files
+DirectoryIndex index.html book_appointment.html
+
+# Enable URL rewriting
+RewriteEngine On
+
+# Handle booking flow routing
+RewriteRule ^booking/?$ booking/book_appointment.html [L]
+RewriteRule ^booking/dentists/?$ booking/dentists.html [L]
+RewriteRule ^booking/schedule/?$ booking/schedule.html [L]
+RewriteRule ^booking/form/?$ booking/booking_form.html [L]

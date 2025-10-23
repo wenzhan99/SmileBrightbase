@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Smile Bright Dental — Booking Confirmed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+  :root{
+    --primary:#1e4b86; --primary-600:#173b6a;
+    --text:#243042; --muted:#6b7a90; --bg:#f5f7fb; --card:#ffffff;
+    --ring:#e5e9f3; --shadow:0 8px 24px rgba(20,40,80,.08); --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:var(--bg)}
+  
+  /* Navigation */
+  .nav{
+    background:#fff;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+    position:sticky;top:0;z-index:100;
+  }
+  .nav-inner{
+    max-width:1200px;margin:0 auto;padding:14px 20px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .brand{
+    font-weight:800;font-size:1.3rem;color:#243042;
+    text-decoration:none;
+  }
+  .navlinks{
+    display:flex;align-items:center;gap:5px;flex:1;justify-content:center;
+  }
+  .nav-item{position:relative}
+  .nav-link{
+    display:block;padding:10px 15px;text-decoration:none;color:#243042;
+    font-weight:600;border-radius:6px;transition:all 0.2s ease;cursor:pointer;
+  }
+  .nav-link:hover,
+  .nav-link:focus{color:#1e4b86;background:rgba(30,75,134,0.05)}
+  .nav-link[aria-current="page"]{color:#1e4b86}
+  .nav-link.has-dropdown::after{
+    content:'▾';margin-left:4px;font-size:0.75em;display:inline-block;
+    transition:transform 0.2s ease;
+  }
+  .nav-item.active .nav-link.has-dropdown::after{transform:rotate(180deg)}
+  .dropdown{
+    position:absolute;top:100%;left:0;min-width:220px;background:#fff;
+    border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:8px 0;
+    margin-top:8px;opacity:0;visibility:hidden;transform:translateY(-10px);
+    transition:all 0.25s ease;pointer-events:none;
+  }
+  .nav-item:hover .dropdown,
+  .nav-item:focus-within .dropdown,
+  .nav-item.active .dropdown{
+    opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto;
+  }
+  .dropdown a{
+    display:block;padding:10px 20px;color:#243042;text-decoration:none;
+    font-weight:500;transition:all 0.15s ease;
+  }
+  .dropdown a:hover,
+  .dropdown a:focus{
+    background:rgba(30,75,134,0.08);color:#1e4b86;padding-left:24px;
+  }
+  .btn{
+    padding:10px 18px;border-radius:999px;border:none;
+    background:#1e4b86;color:#fff;font-weight:700;
+    cursor:pointer;transition:background 0.2s ease;
+    white-space:nowrap;text-decoration:none;display:inline-block;
+  }
+  .btn:hover{background:#173b6a}
+  .menu-toggle{
+    display:none;background:none;border:none;font-size:1.5rem;
+    cursor:pointer;padding:8px;color:#243042;
+  }
+  @media (max-width:900px){
+    .menu-toggle{display:block}
+    .navlinks{
+      position:fixed;top:62px;left:0;right:0;background:#fff;
+      flex-direction:column;align-items:stretch;gap:0;padding:16px 0;
+      box-shadow:0 8px 24px rgba(0,0,0,.1);max-height:0;overflow:hidden;
+      transition:max-height 0.3s ease;
+    }
+    .navlinks.active{max-height:600px}
+    .nav-item{width:100%}
+    .nav-link{padding:12px 20px;border-radius:0}
+    .dropdown{
+      position:static;box-shadow:none;border-radius:0;
+      background:rgba(30,75,134,0.03);margin:0;padding:0;
+      max-height:0;overflow:hidden;transition:max-height 0.3s ease;
+    }
+    .nav-item.active .dropdown{max-height:400px}
+    .dropdown a{padding:10px 20px 10px 40px}
+    .dropdown a:hover,
+    .dropdown a:focus{padding-left:44px}
+    .nav-cta{padding:12px 20px}
+  }
+
+  .wrap{max-width:1100px;margin:28px auto;padding:0 16px}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .card-header{background:var(--primary);color:#fff;padding:22px 26px}
+  .card-header h1{margin:0 0 8px;font-weight:900;font-size:1.7rem;color:#fff}
+  .card-header p{margin:0;color:rgba(255,255,255,.9)}
+  .card-body{padding:24px}
+
+  /* Success Page Styles */
+  .success-container {
+            text-align: center;
+    padding: 40px 20px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+    font-size: 2.5rem;
+            color: white;
+        }
+
+        .success-title {
+    font-size: 2rem;
+            font-weight: 700;
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+
+  .success-message {
+    font-size: 1.1rem;
+    color: var(--muted);
+            margin-bottom: 30px;
+    line-height: 1.6;
+        }
+
+        .booking-details {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .booking-details h3 {
+    color: var(--primary);
+            font-size: 1.3rem;
+    font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+    color: var(--text);
+        }
+
+        .detail-value {
+    color: var(--muted);
+            font-weight: 500;
+        }
+
+  .reference-id {
+    background: var(--primary);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .action-buttons {
+    display: flex;
+            gap: 15px;
+    justify-content: center;
+            margin-top: 30px;
+    flex-wrap: wrap;
+        }
+
+        .action-button {
+    padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+    border: 2px solid transparent;
+        }
+
+  .action-button.primary {
+    background: var(--primary);
+            color: white;
+        }
+
+  .action-button.primary:hover {
+    background: var(--primary-600);
+            transform: translateY(-2px);
+        }
+
+  .action-button.secondary {
+    background: transparent;
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+  
+  .action-button.secondary:hover {
+    background: var(--primary);
+    color: white;
+        }
+
+        .next-steps {
+    background: #e8f4fd;
+    border-radius: 12px;
+    padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+  .next-steps h3 {
+    color: var(--primary);
+    font-size: 1.2rem;
+    font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .next-steps ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .next-steps li {
+            padding: 8px 0;
+    color: var(--muted);
+    position: relative;
+    padding-left: 25px;
+  }
+  
+  .next-steps li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #28a745;
+    font-weight: bold;
+  }
+
+  /* Footer Styles */
+  footer{background:var(--primary);color:#f5f7fb;margin-top:60px}
+  .footer-content{max-width:1200px;margin:0 auto;padding:40px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:32px}
+  .footer-section h3{color:#fff;font-weight:700;font-size:16px;margin:0 0 16px}
+  .footer-section p{color:rgba(245,247,251,.8);line-height:1.6;margin:0 0 12px}
+  .footer-section ul{list-style:none;padding:0;margin:0}
+  .footer-section ul li{margin:0 0 8px}
+  .footer-section ul li a{color:rgba(245,247,251,.8);text-decoration:none;transition:color .15s ease}
+  .footer-section ul li a:hover{color:#fff}
+  .footer-bottom{border-top:1px solid rgba(245,247,251,.2);padding:20px;text-align:center;color:rgba(245,247,251,.7);font-size:14px}
+  .footer-bottom a{color:rgba(245,247,251,.8);text-decoration:none;margin:0 8px}
+  .footer-bottom a:hover{color:#fff}
+  @media (max-width:768px){.footer-content{grid-template-columns:1fr;gap:24px;text-align:center}}
+</style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="brand">Smile Bright Dental</a>
+      
+      <button class="menu-toggle" aria-label="Toggle navigation menu" onclick="toggleMobileMenu()">
+        ☰
+      </button>
+      
+      <div class="navlinks" id="navMenu">
+        <div class="nav-item">
+          <a href="index.html" class="nav-link">Home</a>
+        </div>
+        
+        <div class="nav-item">
+          <a href="aboutus.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+            About Us
+          </a>
+          <div class="dropdown" role="menu">
+            <a href="aboutus.html#team" role="menuitem">Our Team</a>
+            <a href="aboutus.html#mission" role="menuitem">Mission & Values</a>
+            <a href="aboutus.html#careers" role="menuitem">Careers</a>
+            <a href="aboutus.html#contact" role="menuitem">Contact Us</a>
+          </div>
+        </div>
+        
+        <div class="nav-item">
+          <a href="services.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+            Services
+          </a>
+          <div class="dropdown" role="menu">
+            <a href="services.html#general" role="menuitem">General Dentistry</a>
+            <a href="services.html#scaling" role="menuitem">Scaling & Polishing</a>
+            <a href="services.html#braces" role="menuitem">Braces & Invisalign</a>
+            <a href="services.html#whitening" role="menuitem">Teeth Whitening</a>
+            <a href="services.html#implants" role="menuitem">Dental Implants</a>
+            <a href="services.html#wisdom" role="menuitem">Wisdom Tooth Surgery</a>
+          </div>
+        </div>
+        
+        <div class="nav-item">
+          <a href="clinics.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+            Clinics
+          </a>
+          <div class="dropdown" role="menu">
+            <a href="clinics.html#locations" role="menuitem">Locations</a>
+            <a href="clinics.html#hours" role="menuitem">Opening Hours</a>
+            <a href="clinics.html#insurance" role="menuitem">Insurance & CHAS</a>
+            <a href="../Book-Appointment.html" role="menuitem">Book Appointment</a>
+          </div>
+        </div>
+        
+        <div class="nav-item">
+          <a href="FAQ.html" class="nav-link has-dropdown" aria-expanded="false">FAQ</a>
+          <div class="dropdown" role="menu">
+            <a href="FAQ.html#pricing-longevity" role="menuitem">Pricing & Longevity</a>
+            <a href="FAQ.html#processes-procedures" role="menuitem">Processes & Procedures</a>
+            <a href="FAQ.html#patient-transfers" role="menuitem">Patient Transfers</a>
+            <a href="FAQ.html#chas-dental-subsidies" role="menuitem">CHAS Dental Subsidies</a>
+          </div>
+        </div>
+        
+        <div class="nav-cta">
+          <a href="../Book-Appointment.html"><button class="btn" aria-current="page">Book Appointment</button></a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <script>
+    // Mobile menu toggle
+    function toggleMobileMenu() {
+      const navMenu = document.getElementById('navMenu');
+      navMenu.classList.toggle('active');
+    }
+    
+    // Dropdown toggle for mobile/touch devices
+    function toggleDropdown(event, element) {
+      // Only handle clicks on touch devices or when menu is in mobile mode
+      if (window.innerWidth <= 900 || 'ontouchstart' in window) {
+        event.preventDefault();
+        const navItem = element.parentElement;
+        const wasActive = navItem.classList.contains('active');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.nav-item.active').forEach(item => {
+          if (item !== navItem) {
+            item.classList.remove('active');
+            item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+          }
+        });
+        
+        // Toggle current dropdown
+        navItem.classList.toggle('active');
+        element.setAttribute('aria-expanded', !wasActive);
+      }
+    }
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!event.target.closest('.nav-item')) {
+        document.querySelectorAll('.nav-item.active').forEach(item => {
+          item.classList.remove('active');
+          item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        document.querySelectorAll('.nav-item.active').forEach(item => {
+          item.classList.remove('active');
+          item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+  </script>
+
+  <!-- ===== CONTENT ===== -->
+  <div class="wrap">
+    <div class="card">
+      <div class="card-header">
+        <h1>Booking Confirmed!</h1>
+        <p>Your appointment has been successfully booked. We'll send you a confirmation email shortly.</p>
+            </div>
+      <div class="card-body">
+        
+        <div class="success-container">
+          <div class="success-icon">✓</div>
+          <h2 class="success-title">Appointment Booked Successfully!</h2>
+          <p class="success-message">
+            Thank you for choosing Smile Bright Dental. Your appointment has been confirmed and you will receive a confirmation email shortly.
+          </p>
+
+          <div class="booking-details" id="bookingDetails">
+            <h3>Booking Details</h3>
+            <div class="detail-row">
+              <span class="detail-label">Reference ID:</span>
+              <span class="detail-value reference-id" id="referenceId">Loading...</span>
+            </div>
+                <div class="detail-row">
+                    <span class="detail-label">Dentist:</span>
+                    <span class="detail-value" id="dentistName">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Clinic:</span>
+                    <span class="detail-value" id="clinicName">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date:</span>
+                    <span class="detail-value" id="appointmentDate">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Time:</span>
+                    <span class="detail-value" id="appointmentTime">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Service:</span>
+              <span class="detail-value" id="serviceType">Loading...</span>
+            </div>
+            </div>
+
+            <div class="next-steps">
+            <h3>What's Next?</h3>
+            <ul>
+              <li>You will receive a confirmation email with all the details</li>
+              <li>Please arrive 10 minutes before your appointment time</li>
+              <li>Bring a valid ID and any relevant medical records</li>
+              <li>If you need to reschedule, please contact us at least 12 hours in advance</li>
+                </ul>
+            </div>
+
+            <div class="action-buttons">
+            <a href="manage_booking.html" class="action-button primary" id="manageBookingBtn" style="display: none;">Manage This Booking</a>
+            <a href="../index.html" class="action-button secondary">Return to Home</a>
+            <a href="../book_appointment.html" class="action-button secondary">Book Another Appointment</a>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="footer-content">
+      <!-- Branding/About Section -->
+      <div class="footer-section">
+        <h3>Smile Bright Dental</h3>
+        <p>We're committed to providing exceptional dental services in a comfortable and caring environment.</p>
+      </div>
+
+      <!-- Quick Links Section -->
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="aboutus.html">About Us</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="clinics.html">Clinics</a></li>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="../Book-Appointment.html">Book Appointment</a></li>
+        </ul>
+      </div>
+
+      <!-- Services Section -->
+      <div class="footer-section">
+        <h3>Services</h3>
+        <ul>
+          <li><a href="services.html#general">General Dentistry</a></li>
+          <li><a href="services.html#cosmetic">Cosmetic Dentistry</a></li>
+          <li><a href="services.html#orthodontics">Orthodontics</a></li>
+          <li><a href="services.html#implants">Dental Implants</a></li>
+          <li><a href="services.html#pediatric">Pediatric Dentistry</a></li>
+          <li><a href="services.html#emergency">Emergency Dentistry</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact Info Section -->
+      <div class="footer-section">
+        <h3>Contact Info</h3>
+        <p>123 Orchard Road<br>Singapore 238858</p>
+        <p>Phone: +65 6234 5678</p>
+        <p>Email: <a href="mailto:info@smilebrightdental.sg">info@smilebrightdental.sg</a></p>
+        </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <p>© 2025 Smile Bright Dental. All rights reserved. <a href="privacy.html">Privacy Policy</a> • <a href="terms.html">Terms of Service</a></p>
+    </div>
+  </footer>
+
+    <script>
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      loadBookingDetails();
+    });
+
+    function loadBookingDetails() {
+        // Get booking reference from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const ref = urlParams.get('ref');
+
+      if (ref) {
+        // Update reference ID
+        document.getElementById('referenceId').textContent = ref;
+        
+        // Fetch booking details from API
+        fetch(`/SmileBright/api/booking/by-ref.php?ref=${encodeURIComponent(ref)}`)
+          .then(async response => {
+            const text = await response.text();
+            let data;
+            
+            try {
+              data = JSON.parse(text);
+            } catch (e) {
+              console.error('Non-JSON response:', text);
+              throw new Error(`Invalid response format (status ${response.status})`);
+            }
+            
+            if (data.ok && data.booking) {
+              const booking = data.booking;
+              
+              // Update booking details
+              document.getElementById('dentistName').textContent = booking.dentistName || 'Unknown';
+              document.getElementById('clinicName').textContent = booking.clinicName || 'Unknown';
+              
+              if (booking.dateIso) {
+                const date = new Date(booking.dateIso + 'T00:00:00');
+                document.getElementById('appointmentDate').textContent = date.toLocaleDateString('en-SG', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                });
+              }
+              
+              if (booking.time24) {
+                const [hours, minutes] = booking.time24.split(':');
+                const hour = parseInt(hours);
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                const displayHour = hour % 12 || 12;
+                document.getElementById('appointmentTime').textContent = `${displayHour}:${minutes} ${ampm}`;
+              }
+              
+              document.getElementById('serviceType').textContent = booking.serviceLabel || 'General Checkup';
+              
+              // Show manage booking button
+              const manageBtn = document.getElementById('manageBookingBtn');
+              if (manageBtn) {
+                manageBtn.href = `manage_booking.html?ref=${booking.referenceId}`;
+                manageBtn.style.display = 'inline-block';
+              }
+            } else {
+              throw new Error(data.error || 'Booking not found');
+            }
+          })
+          .catch(error => {
+            console.error('Error loading booking details:', error);
+            
+            // Fallback to localStorage if API fails
+            const lastBooking = localStorage.getItem('lastBooking');
+            if (lastBooking) {
+              try {
+                const data = JSON.parse(lastBooking);
+                if (data.dentistName) {
+                  document.getElementById('dentistName').textContent = data.dentistName;
+                }
+                if (data.clinicName) {
+                  document.getElementById('clinicName').textContent = data.clinicName;
+                }
+                if (data.dateIso) {
+                  const date = new Date(data.dateIso + 'T00:00:00');
+                  document.getElementById('appointmentDate').textContent = date.toLocaleDateString('en-SG', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  });
+                }
+                if (data.time24) {
+                  const [hours, minutes] = data.time24.split(':');
+                  const hour = parseInt(hours);
+                  const ampm = hour >= 12 ? 'PM' : 'AM';
+                  const displayHour = hour % 12 || 12;
+                  document.getElementById('appointmentTime').textContent = `${displayHour}:${minutes} ${ampm}`;
+                }
+                if (data.serviceLabel) {
+                  document.getElementById('serviceType').textContent = data.serviceLabel;
+                }
+              } catch (e) {
+                console.warn('Error parsing saved booking data');
+              }
+            } else {
+              // Show error message
+              document.getElementById('bookingDetails').innerHTML = `
+                <h3>Booking Details</h3>
+                <div class="error-message">
+                  <strong>Error:</strong> Unable to load booking details. Reference ID: ${ref}
+                </div>
+                <p><a href="booking_form.html">Return to booking form</a></p>
+              `;
+            }
+          });
+        
+        // Clear saved schedule data
+        localStorage.removeItem('chosenSchedule');
+      } else {
+        // No booking ID, show generic message
+        document.getElementById('bookingDetails').style.display = 'none';
+        document.querySelector('.success-title').textContent = 'Thank You!';
+        document.querySelector('.success-message').textContent = 
+          'Your appointment request has been received. We will contact you shortly to confirm the details.';
+      }
+    }
+    </script>
+</body>
+</html>

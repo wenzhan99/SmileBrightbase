@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Smile Bright Dental — Schedule Appointment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+  :root{
+    --primary:#1e4b86; --primary-600:#173b6a;
+    --text:#243042; --muted:#6b7a90; --bg:#f5f7fb; --card:#ffffff;
+    --ring:#e5e9f3; --shadow:0 8px 24px rgba(20,40,80,.08); --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:var(--bg)}
+  
+  /* Navigation */
+  .nav{
+    background:#fff;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+    position:sticky;top:0;z-index:100;
+  }
+  .nav-inner{
+    max-width:1200px;margin:0 auto;padding:14px 20px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .brand{
+    font-weight:800;font-size:1.3rem;color:#243042;
+    text-decoration:none;
+  }
+  .navlinks{
+    display:flex;align-items:center;gap:5px;flex:1;justify-content:center;
+  }
+  .nav-item{position:relative}
+  .nav-link{
+    display:block;padding:10px 15px;text-decoration:none;color:#243042;
+    font-weight:600;border-radius:6px;transition:all 0.2s ease;cursor:pointer;
+  }
+  .nav-link:hover,
+  .nav-link:focus{color:#1e4b86;background:rgba(30,75,134,0.05)}
+  .nav-link[aria-current="page"]{color:#1e4b86}
+  .nav-link.has-dropdown::after{
+    content:'▾';margin-left:4px;font-size:0.75em;display:inline-block;
+    transition:transform 0.2s ease;
+  }
+  .nav-item.active .nav-link.has-dropdown::after{transform:rotate(180deg)}
+  .dropdown{
+    position:absolute;top:100%;left:0;min-width:220px;background:#fff;
+    border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:8px 0;
+    margin-top:8px;opacity:0;visibility:hidden;transform:translateY(-10px);
+    transition:all 0.25s ease;pointer-events:none;
+  }
+  .nav-item:hover .dropdown,
+  .nav-item:focus-within .dropdown,
+  .nav-item.active .dropdown{
+    opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto;
+  }
+  .dropdown a{
+    display:block;padding:10px 20px;color:#243042;text-decoration:none;
+    font-weight:500;transition:all 0.15s ease;
+  }
+  .dropdown a:hover,
+  .dropdown a:focus{
+    background:rgba(30,75,134,0.08);color:#1e4b86;padding-left:24px;
+  }
+  .btn{
+    padding:10px 18px;border-radius:999px;border:none;
+    background:#1e4b86;color:#fff;font-weight:700;
+    cursor:pointer;transition:background 0.2s ease;
+    white-space:nowrap;text-decoration:none;display:inline-block;
+  }
+  .btn:hover{background:#173b6a}
+  .menu-toggle{
+    display:none;background:none;border:none;font-size:1.5rem;
+    cursor:pointer;padding:8px;color:#243042;
+  }
+  @media (max-width:900px){
+    .menu-toggle{display:block}
+    .navlinks{
+      position:fixed;top:62px;left:0;right:0;background:#fff;
+      flex-direction:column;align-items:stretch;gap:0;padding:16px 0;
+      box-shadow:0 8px 24px rgba(0,0,0,.1);max-height:0;overflow:hidden;
+      transition:max-height 0.3s ease;
+    }
+    .navlinks.active{max-height:600px}
+    .nav-item{width:100%}
+    .nav-link{padding:12px 20px;border-radius:0}
+    .dropdown{
+      position:static;box-shadow:none;border-radius:0;
+      background:rgba(30,75,134,0.03);margin:0;padding:0;
+      max-height:0;overflow:hidden;transition:max-height 0.3s ease;
+    }
+    .nav-item.active .dropdown{max-height:400px}
+    .dropdown a{padding:10px 20px 10px 40px}
+    .dropdown a:hover,
+    .dropdown a:focus{padding-left:44px}
+    .nav-cta{padding:12px 20px}
+  }
+
+  .wrap{max-width:1100px;margin:28px auto;padding:0 16px}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .card-header{background:var(--primary);color:#fff;padding:22px 26px}
+  .card-header h1{margin:0 0 8px;font-weight:900;font-size:1.7rem;color:#fff}
+  .card-header p{margin:0;color:rgba(255,255,255,.9)}
+  .card-body{padding:24px}
+
+  /* Calendar Styles */
+  .calendar-container {
+            background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+    color: #1e4b86;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-button {
+    background: #1e4b86;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+    background: #173b6a;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            padding: 10px;
+            font-weight: 600;
+            color: #6b7a90;
+            font-size: 0.9rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .calendar-day:hover {
+            background: #e8f4fd;
+        }
+
+        .calendar-day.other-month {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .calendar-day.past {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .calendar-day.selected {
+    background: #1e4b86;
+            color: white;
+        }
+
+        .calendar-day.today {
+            background: #e8f4fd;
+    color: #1e4b86;
+            font-weight: 700;
+        }
+
+  /* Time Slots Styles */
+  .time-slots-container {
+            background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .time-slots-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+    color: #1e4b86;
+            margin-bottom: 20px;
+        }
+
+        .time-slots-grid {
+            display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        .time-slot {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .time-slot:hover {
+            background: #e8f4fd;
+    border-color: #1e4b86;
+            transform: translateY(-2px);
+        }
+
+        .time-slot.selected {
+    background: #1e4b86;
+            color: white;
+    border-color: #1e4b86;
+        }
+
+        .continue-button {
+    background: var(--primary);
+    color: #fff;
+    border: 0;
+    border-radius: 999px;
+    padding: 12px 22px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 3px 0 rgba(0,0,0,.08);
+    width: 100%;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin-top: 30px;
+        }
+
+        .continue-button:hover {
+    background: var(--primary-600);
+            transform: translateY(-2px);
+        }
+
+        .continue-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+  /* Footer Styles */
+  footer{background:var(--primary);color:#f5f7fb;margin-top:60px}
+  .footer-content{max-width:1200px;margin:0 auto;padding:40px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:32px}
+  .footer-section h3{color:#fff;font-weight:700;font-size:16px;margin:0 0 16px}
+  .footer-section p{color:rgba(245,247,251,.8);line-height:1.6;margin:0 0 12px}
+  .footer-section ul{list-style:none;padding:0;margin:0}
+  .footer-section ul li{margin:0 0 8px}
+  .footer-section ul li a{color:rgba(245,247,251,.8);text-decoration:none;transition:color .15s ease}
+  .footer-section ul li a:hover{color:#fff}
+  .footer-bottom{border-top:1px solid rgba(245,247,251,.2);padding:20px;text-align:center;color:rgba(245,247,251,.7);font-size:14px}
+  .footer-bottom a{color:rgba(245,247,251,.8);text-decoration:none;margin:0 8px}
+  .footer-bottom a:hover{color:#fff}
+  @media (max-width:768px){.footer-content{grid-template-columns:1fr;gap:24px;text-align:center}}
+    </style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="brand">Smile Bright Dental</a>
+      
+      <button class="menu-toggle" aria-label="Toggle navigation menu" onclick="toggleMobileMenu()">
+        ☰
+      </button>
+      
+      <div class="navlinks" id="navMenu">
+        <div class="nav-item">
+          <a href="index.html" class="nav-link">Home</a>
+        </div>
+        
+        <div class="nav-item">
+          <a href="aboutus.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+            About Us
+          </a>
+          <div class="dropdown" role="menu">
+            <a href="aboutus.html#team" role="menuitem">Our Team</a>
+            <a href="aboutus.html#mission" role="menuitem">Mission & Values</a>
+            <a href="aboutus.html#careers" role="menuitem">Careers</a>
+            <a href="aboutus.html#contact" role="menuitem">Contact Us</a>
+          </div>
+        </div>
+        
+        <div class="nav-item">
+          <a href="services.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+            Services
+          </a>
+          <div class="dropdown" role="menu">
+            <a href="services.html#general" role="menuitem">General Dentistry</a>
+            <a href="services.html#scaling" role="menuitem">Scaling & Polishing</a>
+            <a href="services.html#braces" role="menuitem">Braces & Invisalign</a>
+            <a href="services.html#whitening" role="menuitem">Teeth Whitening</a>
+            <a href="services.html#implants" role="menuitem">Dental Implants</a>
+            <a href="services.html#wisdom" role="menuitem">Wisdom Tooth Surgery</a>
+          </div>
+        </div>
+        
+        <div class="nav-item">
+          <a href="clinics.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+            Clinics
+          </a>
+          <div class="dropdown" role="menu">
+            <a href="clinics.html#locations" role="menuitem">Locations</a>
+            <a href="clinics.html#hours" role="menuitem">Opening Hours</a>
+            <a href="clinics.html#insurance" role="menuitem">Insurance & CHAS</a>
+            <a href="../book_appointment.html" role="menuitem">Book Appointment</a>
+            </div>
+        </div>
+
+        <div class="nav-item">
+          <a href="FAQ.html" class="nav-link has-dropdown" aria-expanded="false">FAQ</a>
+          <div class="dropdown" role="menu">
+            <a href="FAQ.html#pricing-longevity" role="menuitem">Pricing & Longevity</a>
+            <a href="FAQ.html#processes-procedures" role="menuitem">Processes & Procedures</a>
+            <a href="FAQ.html#patient-transfers" role="menuitem">Patient Transfers</a>
+            <a href="FAQ.html#chas-dental-subsidies" role="menuitem">CHAS Dental Subsidies</a>
+          </div>
+        </div>
+
+        <div class="nav-cta">
+          <a href="../book_appointment.html"><button class="btn" aria-current="page">Book Appointment</button></a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <script>
+    // Mobile menu toggle
+    function toggleMobileMenu() {
+      const navMenu = document.getElementById('navMenu');
+      navMenu.classList.toggle('active');
+    }
+    
+    // Dropdown toggle for mobile/touch devices
+    function toggleDropdown(event, element) {
+      // Only handle clicks on touch devices or when menu is in mobile mode
+      if (window.innerWidth <= 900 || 'ontouchstart' in window) {
+        event.preventDefault();
+        const navItem = element.parentElement;
+        const wasActive = navItem.classList.contains('active');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.nav-item.active').forEach(item => {
+          if (item !== navItem) {
+            item.classList.remove('active');
+            item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+          }
+        });
+        
+        // Toggle current dropdown
+        navItem.classList.toggle('active');
+        element.setAttribute('aria-expanded', !wasActive);
+      }
+    }
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!event.target.closest('.nav-item')) {
+        document.querySelectorAll('.nav-item.active').forEach(item => {
+          item.classList.remove('active');
+          item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        document.querySelectorAll('.nav-item.active').forEach(item => {
+          item.classList.remove('active');
+          item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+  </script>
+
+  <!-- ===== CONTENT ===== -->
+  <div class="wrap">
+    <div class="card">
+      <div class="card-header">
+        <h1>Schedule Your Appointment</h1>
+        <p id="scheduleSubtitle">Schedule an appointment for your needs.</p>
+      </div>
+      <div class="card-body">
+        
+        <div class="calendar-container">
+                <div class="calendar-header">
+                    <div class="calendar-title" id="calendarTitle">October 2025</div>
+                    <div class="calendar-nav">
+              <button class="nav-button" id="prevMonth">‹</button>
+              <button class="nav-button" id="nextMonth">›</button>
+                    </div>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be generated here -->
+                </div>
+            </div>
+
+        <div class="time-slots-container">
+          <div class="time-slots-title">Available Times</div>
+          <div class="time-slots-grid" id="timeSlotsGrid">
+            <div style="text-align: center; color: #6b7a90; padding: 40px;">
+              Select a date to see available times
+                </div>
+                    </div>
+                </div>
+
+        <button class="continue-button" id="continueButton" disabled onclick="continueToBooking()">
+                    Continue to Booking Form
+                </button>
+            </div>
+        </div>
+    </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="footer-content">
+      <!-- Branding/About Section -->
+      <div class="footer-section">
+        <h3>Smile Bright Dental</h3>
+        <p>We're committed to providing exceptional dental services in a comfortable and caring environment.</p>
+      </div>
+
+      <!-- Quick Links Section -->
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="aboutus.html">About Us</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="clinics.html">Clinics</a></li>
+          <li><a href="FAQ.html">FAQ</a></li>
+          <li><a href="../Book-Appointment.html">Book Appointment</a></li>
+        </ul>
+      </div>
+
+      <!-- Services Section -->
+      <div class="footer-section">
+        <h3>Services</h3>
+        <ul>
+          <li><a href="services.html#general">General Dentistry</a></li>
+          <li><a href="services.html#cosmetic">Cosmetic Dentistry</a></li>
+          <li><a href="services.html#orthodontics">Orthodontics</a></li>
+          <li><a href="services.html#implants">Dental Implants</a></li>
+          <li><a href="services.html#pediatric">Pediatric Dentistry</a></li>
+          <li><a href="services.html#emergency">Emergency Dentistry</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact Info Section -->
+      <div class="footer-section">
+        <h3>Contact Info</h3>
+        <p>123 Orchard Road<br>Singapore 238858</p>
+        <p>Phone: +65 6234 5678</p>
+        <p>Email: <a href="mailto:info@smilebrightdental.sg">info@smilebrightdental.sg</a></p>
+      </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <p>© 2025 Smile Bright Dental. All rights reserved. <a href="privacy.html">Privacy Policy</a> • <a href="terms.html">Terms of Service</a></p>
+    </div>
+  </footer>
+
+    <script>
+    // Global variables
+        let selectedDentist = null;
+        let selectedDate = null;
+        let selectedTime = null;
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        // Dentist data
+        const dentists = [
+            {
+                id: "dr-chua",
+                name: "Dr. Chua Wen Zhan",
+                specialty: "Principal Dentist",
+                clinic_id: "orchard-clinic",
+        clinic_name: "Orchard Clinic",
+        initials: "CW"
+            },
+            {
+                id: "dr-lau",
+                name: "Dr. Lau Gwen",
+                specialty: "Emergency Dentist",
+                clinic_id: "orchard-clinic",
+        clinic_name: "Orchard Clinic",
+        initials: "LG"
+            },
+            {
+                id: "dr-sarah",
+                name: "Dr. Sarah Tan",
+                specialty: "Cosmetic Dentist",
+                clinic_id: "marina-bay-clinic",
+        clinic_name: "Marina Bay Clinic",
+        initials: "ST"
+            },
+            {
+                id: "dr-james",
+                name: "Dr. James Lim",
+                specialty: "Orthodontist",
+                clinic_id: "bukit-timah-clinic",
+        clinic_name: "Bukit Timah Clinic",
+        initials: "JL"
+            },
+            {
+                id: "dr-aisha",
+                name: "Dr. Aisha Rahman",
+                specialty: "Cosmetic Dentist",
+                clinic_id: "tampines-clinic",
+        clinic_name: "Tampines Clinic",
+        initials: "AR"
+            },
+            {
+                id: "dr-alex",
+                name: "Dr. Alex Lee",
+                specialty: "Pediatric Dentist",
+                clinic_id: "jurong-clinic",
+        clinic_name: "Jurong Clinic",
+        initials: "AL"
+      }
+    ];
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeSchedule();
+    });
+
+    function initializeSchedule() {
+      // Get dentist from URL parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const dentistId = urlParams.get('dentist');
+      
+      if (!dentistId) {
+        window.location.href = './dentists.html';
+        return;
+      }
+
+      // Find dentist
+            selectedDentist = dentists.find(d => d.id === dentistId);
+      if (!selectedDentist) {
+        window.location.href = './dentists.html';
+        return;
+      }
+
+      // Update subtitle
+      document.getElementById('scheduleSubtitle').textContent = 
+                `Schedule an appointment for your ${selectedDentist.specialty} needs.`;
+
+            // Generate calendar
+            generateCalendar();
+      
+      // Setup event listeners
+      setupEventListeners();
+    }
+
+    function setupEventListeners() {
+      // Calendar navigation
+      document.getElementById('prevMonth').onclick = () => {
+        currentMonth--;
+        if (currentMonth < 0) {
+          currentMonth = 11;
+          currentYear--;
+        }
+        generateCalendar();
+      };
+
+      document.getElementById('nextMonth').onclick = () => {
+        currentMonth++;
+        if (currentMonth > 11) {
+          currentMonth = 0;
+          currentYear++;
+        }
+        generateCalendar();
+      };
+        }
+
+        function generateCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const monthNames = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+
+            // Update calendar title
+            document.getElementById('calendarTitle').textContent = 
+                `${monthNames[currentMonth]} ${currentYear}`;
+
+            // Clear calendar
+            calendarGrid.innerHTML = '';
+
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-day-header';
+                header.textContent = day;
+                calendarGrid.appendChild(header);
+            });
+
+            // Get first day of month and number of days
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+
+            // Add empty cells for days before month starts
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day other-month';
+                calendarGrid.appendChild(emptyDay);
+            }
+
+            // Add days of the month
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+
+                const currentDate = new Date(currentYear, currentMonth, day);
+                
+                // Check if it's today
+                if (currentDate.toDateString() === today.toDateString()) {
+                    dayElement.classList.add('today');
+                }
+                
+                // Check if it's in the past
+                if (currentDate < today) {
+                    dayElement.classList.add('past');
+                } else {
+                    // Add click handler for future dates
+                    dayElement.onclick = () => selectDate(day);
+                }
+
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function selectDate(day) {
+            // Remove previous selection
+            document.querySelectorAll('.calendar-day.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            // Add selection to clicked day
+            event.target.classList.add('selected');
+
+            // Set selected date
+            selectedDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            
+            // Reset time selection and disable button until new time is selected
+            selectedTime = null;
+            document.getElementById('continueButton').disabled = true;
+            
+            // Clear any previously selected time slots
+            document.querySelectorAll('.time-slot.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Load time slots
+            loadTimeSlots(selectedDate);
+        }
+
+        async function loadTimeSlots(date) {
+            const timeSlotsGrid = document.getElementById('timeSlotsGrid');
+      
+      try {
+        // Call API to get available time slots
+        const response = await fetch(`../../api/availability.php?dentist=${selectedDentist.id}&clinic=${selectedDentist.clinic_id}&date=${date}`);
+        const data = await response.json();
+        
+        if (data.success && data.slots.length > 0) {
+          timeSlotsGrid.innerHTML = '';
+          
+          data.slots.forEach(timeSlot => {
+            const slotElement = document.createElement('div');
+            slotElement.className = 'time-slot';
+            slotElement.textContent = timeSlot;
+            slotElement.onclick = () => selectTimeSlot(timeSlot, slotElement);
+            timeSlotsGrid.appendChild(slotElement);
+          });
+        } else {
+          // Fallback to default times if API is not available
+          const defaultTimes = ["09:00", "11:00", "14:00", "16:00"];
+          timeSlotsGrid.innerHTML = '';
+          
+          defaultTimes.forEach(timeSlot => {
+                    const slotElement = document.createElement('div');
+                    slotElement.className = 'time-slot';
+                    slotElement.textContent = timeSlot;
+                    slotElement.onclick = () => selectTimeSlot(timeSlot, slotElement);
+                    timeSlotsGrid.appendChild(slotElement);
+                });
+        }
+            } catch (error) {
+                console.error('Error loading time slots:', error);
+        // Fallback to default times
+        const defaultTimes = ["09:00", "11:00", "14:00", "16:00"];
+        timeSlotsGrid.innerHTML = '';
+        
+        defaultTimes.forEach(timeSlot => {
+          const slotElement = document.createElement('div');
+          slotElement.className = 'time-slot';
+          slotElement.textContent = timeSlot;
+          slotElement.onclick = () => selectTimeSlot(timeSlot, slotElement);
+          timeSlotsGrid.appendChild(slotElement);
+        });
+            }
+        }
+
+        function selectTimeSlot(time, element) {
+            // Remove previous selection
+            document.querySelectorAll('.time-slot.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            // Add selection
+            element.classList.add('selected');
+            selectedTime = time;
+
+            // Enable continue button only if both date and time are selected
+            if (selectedDate && selectedTime) {
+                document.getElementById('continueButton').disabled = false;
+            }
+        }
+
+    function continueToBooking() {
+      console.log('continueToBooking called');
+      console.log('selectedDentist:', selectedDentist);
+      console.log('selectedDate:', selectedDate);
+      console.log('selectedTime:', selectedTime);
+      
+      if (!selectedDentist || !selectedDate || !selectedTime) {
+        alert('Please pick a date and time first.');
+        return;
+      }
+
+      // Save schedule selection to localStorage for fallback
+      const savedData = JSON.parse(localStorage.getItem('chosenSchedule') || '{}');
+      savedData.dentist = selectedDentist;
+      savedData.date = selectedDate;
+      savedData.time = selectedTime;
+      localStorage.setItem('chosenSchedule', JSON.stringify(savedData));
+
+      // IMPORTANT: use a RELATIVE URL so it works inside subfolders too
+      const queryParams = new URLSearchParams({
+        dentist: selectedDentist.id,
+        dentistName: selectedDentist.name,
+        clinic: selectedDentist.clinic_id,
+        date: selectedDate,
+        time: selectedTime
+      });
+      
+      const targetUrl = './booking_form.html?' + queryParams.toString();
+      console.log('Navigating to:', targetUrl);
+      
+      window.location.href = targetUrl;
+    }
+    </script>
+</body>
+</html>

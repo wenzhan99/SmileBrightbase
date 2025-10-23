@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Booking API</title>
+</head>
+<body>
+    <h1>Test Booking API</h1>
+    <button onclick="testAPI()">Test API</button>
+    <div id="result"></div>
+    
+    <script>
+        async function testAPI() {
+            const testData = {
+                appointment: {
+                    dentistId: 'dr-aisha',
+                    dentistName: 'Dr. Aisha Rahman',
+                    clinicId: 'tampines',
+                    clinicName: 'Tampines Clinic',
+                    serviceCode: 'general_checkup',
+                    serviceLabel: 'General Checkup',
+                    experienceCode: 'first_time',
+                    experienceLabel: 'First time patient',
+                    dateIso: '2025-10-30',
+                    time24: '14:00'
+                },
+                patient: {
+                    firstName: 'WEN ZHAN',
+                    lastName: 'CHUA',
+                    email: 'wenzhan99@gmail.com',
+                    phone: '+6585880723',
+                    notes: 'NA'
+                },
+                consent: {
+                    agreePolicy: true,
+                    agreeTerms: true
+                }
+            };
+            
+            try {
+                console.log('Testing API...');
+                
+                const response = await fetch('../api/booking/create.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+                
+                const text = await response.text();
+                console.log('Raw response:', text);
+                
+                document.getElementById('result').innerHTML = `
+                    <h3>Status: ${response.status}</h3>
+                    <h3>Content-Type: ${response.headers.get('content-type')}</h3>
+                    <h3>Raw Response:</h3>
+                    <pre style="background:#f0f0f0;padding:10px;max-height:300px;overflow:auto;">${text}</pre>
+                `;
+                
+                // Try to parse as JSON
+                try {
+                    const jsonData = JSON.parse(text);
+                    console.log('Parsed JSON:', jsonData);
+                    document.getElementById('result').innerHTML += `
+                        <h3>Parsed JSON:</h3>
+                        <pre style="background:#e8f5e8;padding:10px;">${JSON.stringify(jsonData, null, 2)}</pre>
+                    `;
+                    
+                    if (jsonData.ok) {
+                        document.getElementById('result').innerHTML += `
+                            <h3 style="color:green;">✅ SUCCESS!</h3>
+                            <p><a href="${jsonData.redirectUrl}" target="_blank">Go to Success Page</a></p>
+                        `;
+                    }
+                } catch (e) {
+                    console.error('JSON Parse Error:', e);
+                    document.getElementById('result').innerHTML += `
+                        <h3 style="color:red;">JSON Parse Error: ${e.message}</h3>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                document.getElementById('result').innerHTML = `
+                    <h3 style="color:red;">Fetch Error: ${error.message}</h3>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

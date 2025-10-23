@@ -1,42 +1,19 @@
-YOUR APPOINTMENT IS BOOKED ✅
-We've reserved your slot at SmileBright Dental
+Smile Bright — Booking confirmed (#{{reference_id}}) on {{date}} at {{time}}
 
 Hi {{full_name}},
 
-We've confirmed your appointment. Here are the details:
+Your appointment with {{dentistName}} at {{clinicName}} is confirmed for {{date}} {{time}}.
 
-APPOINTMENT DETAILS
-==================
-
-📅 When: {{date}} at {{time}} ({{timezone}} timezone)
-🏥 Clinic: {{clinic_info.name}}
-   {{clinic_info.address}}
+📅 Date: {{date}} at {{time}}
+🏥 Clinic: {{clinicName}}
 🦷 Service: {{service}}
 📞 Reference ID: {{reference_id}}
 
-{{#if message}}
-NOTES YOU SHARED
-================
-{{message}}
-{{/if}}
-
-NEED TO CHANGE YOUR APPOINTMENT?
-================================
-
+Need to change your appointment?
 Reschedule: {{view_url}}
 Cancel: {{cancel_url}}
-
-This link is valid until {{token_expiry_date}}
-
-⚠️ DIDN'T MAKE THIS BOOKING?
-============================
-Please contact us immediately at:
-{{support_phone}} or {{support_email}}
 
 ---
 Appointment ID: #{{booking_id}} • Created {{sent_at}}
 — SmileBright Dental
 Your trusted dental care provider in Singapore
-
-This is an automated confirmation email.
-For inquiries, contact us at {{support_email}}

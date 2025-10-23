@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smile Bright Dental — Services</title>
+  <style>
+    :root{
+      --primary:#1e4b86;
+      --primary-600:#173b6a;
+      --text:#243042;
+      --muted:#6b7a90;
+      --bg:#f5f7fb;
+      --accent:#2b7fff;
+      --radius:16px;
+      --shadow:0 12px 28px rgba(22, 39, 76, .08);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font:16px/1.55 "Segoe UI",system-ui,-apple-system,Arial,Helvetica,sans-serif;
+      color:var(--text);
+      background:var(--bg);
+    }
+
+    /* NAVIGATION */
+    nav{
+      background:#fff;
+      box-shadow:0 2px 10px rgba(0,0,0,.06);
+      position:sticky;top:0;z-index:100;
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand{font-weight:800;font-size:1.3rem;color:#243042;text-decoration:none}
+    
+    /* Navigation Links */
+    .navlinks {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex: 1;
+      justify-content: center;
+    }
+    
+    /* Nav items (with and without dropdowns) */
+    .nav-item {
+      position: relative;
+    }
+    .nav-link {
+      display: block;
+      padding: 10px 15px;
+      text-decoration: none;
+      color: #243042;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .nav-link:hover,
+    .nav-link:focus {
+      color: #1e4b86;
+      background: rgba(30, 75, 134, 0.05);
+    }
+    .nav-link[aria-current="page"] {
+      color: #1e4b86;
+    }
+    
+    /* Dropdown indicator */
+    .nav-link.has-dropdown::after {
+      content: '▾';
+      margin-left: 4px;
+      font-size: 0.75em;
+      display: inline-block;
+      transition: transform 0.2s ease;
+    }
+    .nav-item.active .nav-link.has-dropdown::after {
+      transform: rotate(180deg);
+    }
+    
+    /* Dropdown menu */
+    .dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 220px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.12);
+      padding: 8px 0;
+      margin-top: 8px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+    }
+    
+    /* Show dropdown on hover (desktop) */
+    .nav-item:hover .dropdown,
+    .nav-item:focus-within .dropdown,
+    .nav-item.active .dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    
+    .dropdown a {
+      display: block;
+      padding: 10px 20px;
+      color: #243042;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+    .dropdown a:hover,
+    .dropdown a:focus {
+      background: rgba(30, 75, 134, 0.08);
+      color: #1e4b86;
+      padding-left: 24px;
+    }
+    
+    /* Book Appointment Button */
+    .btn{
+      padding:10px 18px;border-radius:999px;border:none;
+      background:#1e4b86;color:#fff;font-weight:700;cursor:pointer;
+      transition: background 0.2s ease;
+      white-space: nowrap;
+    }
+    .btn:hover{background:#173b6a;}
+    
+    /* Mobile menu toggle */
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 8px;
+      color: #243042;
+    }
+    
+    /* Mobile Styles */
+    @media (max-width: 900px) {
+      .menu-toggle {
+        display: block;
+      }
+      
+      .navlinks {
+        position: fixed;
+        top: 62px;
+        left: 0;
+        right: 0;
+        background: #fff;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 16px 0;
+        box-shadow: 0 8px 24px rgba(0,0,0,.1);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+      
+      .navlinks.active {
+        max-height: 600px;
+      }
+      
+      .nav-item {
+        width: 100%;
+      }
+      
+      .nav-link {
+        padding: 12px 20px;
+        border-radius: 0;
+      }
+      
+      .dropdown {
+        position: static;
+        box-shadow: none;
+        border-radius: 0;
+        background: rgba(30, 75, 134, 0.03);
+        margin: 0;
+        padding: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+      
+      .nav-item.active .dropdown {
+        max-height: 400px;
+      }
+      
+      .dropdown a {
+        padding: 10px 20px 10px 40px;
+      }
+      
+      .dropdown a:hover,
+      .dropdown a:focus {
+        padding-left: 44px;
+      }
+      
+      .nav-cta {
+        padding: 12px 20px;
+      }
+    }
+
+    /* HERO */
+    .hero{
+      background:var(--primary);color:#fff;text-align:center;
+      padding:70px 20px;
+    }
+    .hero h1{font-size:2.4rem;margin-bottom:10px;}
+    .hero p{opacity:.9;max-width:700px;margin:0 auto;}
+
+    /* SERVICE SECTIONS */
+    .service-section{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      max-width:1200px;
+      margin:80px auto;
+      gap:40px;
+      padding:0 20px;
+      flex-wrap:wrap;
+    }
+    .service-section:nth-child(even){
+      flex-direction:row-reverse;
+    }
+    .service-section img{
+      width:100%;
+      max-width:520px;
+      height:350px;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      object-fit:cover;
+      object-position:center;
+    }
+    .service-text{
+      flex:1;
+      min-width:300px;
+    }
+    .service-text h2{
+      font-size:1.8rem;
+      margin-bottom:10px;
+      color:var(--primary-600);
+    }
+    .service-text p{
+      color:var(--muted);
+      margin-bottom:20px;
+    }
+
+    /* FOOTER */
+    footer{
+      background:#1e3d6c;color:#dfe7ff;margin-top:80px;
+    }
+    .footer-wrap{
+      max-width:1200px;margin:0 auto;padding:40px 20px;
+      display:grid;gap:24px;grid-template-columns:2fr 1fr 1fr 1fr;
+    }
+    footer h4{margin-bottom:10px}
+    footer p, footer a{color:#dfe7ff;opacity:.9;text-decoration:none}
+    .footbar{
+      border-top:1px solid rgba(255,255,255,.2);
+      text-align:center;padding:14px 12px;font-size:.92rem;
+    }
+    @media (max-width:900px){
+      .footer-wrap{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:640px){
+      .footer-wrap{grid-template-columns:1fr}
+      .service-section{flex-direction:column!important;text-align:center;}
+      .service-section img{height:280px;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html" class="brand">Smile Bright Dental</a>
+      
+      <button class="menu-toggle" aria-label="Toggle navigation menu" onclick="toggleMobileMenu()">
+        ☰
+      </button>
+      
+      <div class="navlinks" id="navMenu">
+        <div class="nav-item">
+          <a href="index.html" class="nav-link">Home</a>
+        </div>
+        
+        <div class="nav-item">
+          <a href="about_us.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+            About Us
+          </a>
+          <div class="dropdown" role="menu">
+            <a href="about_us.html#team" role="menuitem">Our Team</a>
+            <a href="about_us.html#mission" role="menuitem">Mission & Values</a>
+            <a href="about_us.html#careers" role="menuitem">Careers</a>
+            <a href="about_us.html#contact" role="menuitem">Contact Us</a>
+          </div>
+        </div>
+        
+        <div class="nav-item">
+          <a href="services.html" class="nav-link has-dropdown" aria-current="page" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+            Services
+          </a>
+          <div class="dropdown" role="menu">
+            <a href="services.html#general" role="menuitem">General Dentistry</a>
+            <a href="services.html#scaling" role="menuitem">Scaling & Polishing</a>
+            <a href="services.html#braces" role="menuitem">Braces & Invisalign</a>
+            <a href="services.html#whitening" role="menuitem">Teeth Whitening</a>
+            <a href="services.html#implants" role="menuitem">Dental Implants</a>
+            <a href="services.html#wisdom" role="menuitem">Wisdom Tooth Surgery</a>
+          </div>
+        </div>
+        
+        <div class="nav-item">
+          <a href="clinics.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+            Clinics
+          </a>
+          <div class="dropdown" role="menu">
+            <a href="clinics.html#locations" role="menuitem">Locations</a>
+            <a href="clinics.html#hours" role="menuitem">Opening Hours</a>
+            <a href="clinics.html#insurance" role="menuitem">Insurance & CHAS</a>
+            <a href="book_appointment.html" role="menuitem">Book Appointment</a>
+          </div>
+        </div>
+        
+        <div class="nav-item">
+          <a href="FAQ.html" class="nav-link has-dropdown" aria-expanded="false">FAQ</a>
+          <div class="dropdown" role="menu">
+            <a href="FAQ.html#pricing-longevity" role="menuitem">Pricing & Longevity</a>
+            <a href="FAQ.html#processes-procedures" role="menuitem">Processes & Procedures</a>
+            <a href="FAQ.html#patient-transfers" role="menuitem">Patient Transfers</a>
+            <a href="FAQ.html#chas-dental-subsidies" role="menuitem">CHAS Dental Subsidies</a>
+          </div>
+        </div>
+        
+        <div class="nav-cta">
+          <a href="book_appointment.html"><button class="btn">Book Appointment</button></a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <script>
+    // Mobile menu toggle
+    function toggleMobileMenu() {
+      const navMenu = document.getElementById('navMenu');
+      navMenu.classList.toggle('active');
+    }
+    
+    // Dropdown toggle for mobile/touch devices
+    function toggleDropdown(event, element) {
+      // Only handle clicks on touch devices or when menu is in mobile mode
+      if (window.innerWidth <= 900 || 'ontouchstart' in window) {
+        event.preventDefault();
+        const navItem = element.parentElement;
+        const wasActive = navItem.classList.contains('active');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.nav-item.active').forEach(item => {
+          if (item !== navItem) {
+            item.classList.remove('active');
+            item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+          }
+        });
+        
+        // Toggle current dropdown
+        navItem.classList.toggle('active');
+        element.setAttribute('aria-expanded', !wasActive);
+      }
+    }
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!event.target.closest('.nav-item')) {
+        document.querySelectorAll('.nav-item.active').forEach(item => {
+          item.classList.remove('active');
+          item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        document.querySelectorAll('.nav-item.active').forEach(item => {
+          item.classList.remove('active');
+          item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+  </script>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Our Services</h1>
+    <p>From preventive care to advanced treatments, Smile Bright Dental offers a full range of services to keep your smile healthy and confident.</p>
+  </section>
+
+  <!-- SERVICES SECTIONS -->
+
+  <section class="service-section">
+    <img src="GeneralDentistry.jpg" alt="General Dentistry treatment photo">
+    <div class="service-text">
+      <h2>General Dentistry</h2>
+      <p>Routine check-ups, professional cleanings, and cavity fillings form the foundation of your oral health. Our dentists provide comprehensive preventive care to detect early signs of tooth decay, gum disease, and other concerns. From polishing and scaling to restorative fillings, we help keep your smile healthy, strong, and confident for years to come.</p>
+    </div>
+  </section>
+
+  <section class="service-section">
+    <img src="ComesticDentistry.jpg" alt="Cosmetic Dentistry whitening session">
+    <div class="service-text">
+      <h2>Cosmetic Dentistry</h2>
+      <p>Enhance your smile with our range of aesthetic dental solutions, including teeth whitening, veneers, and bonding treatments. Whether you wish to brighten your teeth, fix minor imperfections, or achieve a complete smile makeover, our cosmetic experts use the latest technology and materials to give you a natural, radiant look.</p>
+    </div>
+  </section>
+
+  <section class="service-section">
+    <img src="OrthodonticsBraces.jpg" alt="Orthodontics treatment braces aligners placeholder">
+    <div class="service-text">
+      <h2>Orthodontics</h2>
+      <p>Straighten your smile with modern orthodontic care for all ages. We offer both traditional braces and clear aligners to correct crooked teeth, gaps, and bite misalignments. Our orthodontists customize each treatment plan to ensure comfort, efficiency, and lasting results; helping you achieve perfect alignment and improved confidence.</p>
+    </div>
+  </section>
+
+  <section class="service-section">
+    <img src="DentalImplants.jpg" alt="Dental Implants close-up placeholder">
+    <div class="service-text">
+      <h2>Dental Implants</h2>
+      <p>Dental implants are the gold standard for replacing missing teeth. Offering strength, stability, and a natural appearance. Designed to mimic real tooth roots, implants fuse with the jawbone to prevent bone loss and maintain your facial structure. Whether you’re missing one tooth or several, implants restore both function and beauty to your smile.</p>
+    </div>
+  </section>
+
+  <section class="service-section">
+    <img src="PediatricDentistry.jpg" alt="Pediatric Dentistry kids dental care placeholder">
+    <div class="service-text">
+      <h2>Pediatric Dentistry</h2>
+      <p>Gentle, caring dental care for children of all ages. Our pediatric specialists create a friendly, stress-free environment where kids can feel at ease while learning healthy oral hygiene habits. From their first visit to regular check-ups and fluoride treatments, we help nurture a lifetime of confident smiles.</p>
+    </div>
+  </section>
+
+  <section class="service-section">
+    <img src="EmergencyDentistry.jpg" alt="Emergency Dentistry urgent care placeholder">
+    <div class="service-text">
+      <h2>Emergency Dentistry</h2>
+      <p>Dental pain or injury can happen anytime. Our emergency dental services are available to provide immediate relief from toothaches, chipped or knocked-out teeth, infections, and other urgent conditions. We ensure prompt care to minimize discomfort and prevent further damage to your teeth and gums.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-wrap">
+      <div>
+        <h4>Smile Bright Dental</h4>
+        <p>We’re committed to providing exceptional dental services in a comfortable and caring environment.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <p><a href="index.html">Home</a><br/>
+           <a href="about_us.html">About Us</a><br/>
+           <a href="services.html">Services</a><br/>
+           <a href="clinics.html">Clinics</a><br/>
+           <a href="FAQ.html">FAQ</a><br/>
+           <a href="book_appointment.html">Book Appointment</a><br/>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <p><a href="services.html">General Dentistry</a><br/>
+           <a href="services.html">Cosmetic Dentistry</a><br/>
+           <a href="services.html">Orthodontics</a><br/>
+           <a href="services.html">Dental Implants</a><br/>
+           <a href="services.html">Pediatric Dentistry</a><br/>
+           <a href="services.html">Emergency Dentistry</a></p>
+      </div>
+      <div>
+        <h4>Contact Info</h4>
+        <p>123 Orchard Road<br/>Singapore 238858<br/>
+           Phone: +65 6234 5678<br/>
+           Email: info@smilebrightdental.sg</p>
+      </div>
+    </div>
+    <div class="footbar">
+      © 2025 Smile Bright Dental. All rights reserved. · <a href="#" style="color:#fff">Privacy Policy</a> · <a href="#" style="color:#fff">Terms of Service</a>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+

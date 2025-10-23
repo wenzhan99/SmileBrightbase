@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirecting...</title>
+    <meta http-equiv="refresh" content="0; url=booking_success.html">
+</head>
+<body>
+    <p>Redirecting to booking success page...</p>
+    <script>
+        // Get parameters from current URL and redirect to booking_success.html
+        const urlParams = new URLSearchParams(window.location.search);
+        const ref = urlParams.get('ref');
+        
+        if (ref) {
+            window.location.href = 'booking_success.html?ref=' + ref;
+        } else {
+            window.location.href = 'booking_success.html';
+        }
+    </script>
+</body>
+</html>

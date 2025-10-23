@@ -1,0 +1,30 @@
+Booking Confirmation - Smile Bright Dental
+
+Dear {{patient.firstName}} {{patient.lastName}},
+
+Thank you for choosing Smile Bright Dental! Your appointment has been successfully confirmed.
+
+APPOINTMENT DETAILS
+==================
+Reference ID: {{referenceId}}
+Dentist: {{appointment.dentistName}}
+Clinic: {{appointment.clinicName}}
+Date: {{appointment.dateDisplay}}
+Time: {{appointment.timeDisplay}}
+Service: {{appointment.serviceLabel}}
+
+WHAT'S NEXT?
+============
+• Please arrive 10 minutes before your appointment time
+• Bring a valid ID and any relevant medical records
+• If you need to reschedule, please contact us at least 12 hours in advance
+
+Manage your booking: {{manageUrl}}
+
+CONTACT INFORMATION
+===================
+Smile Bright Dental
+Email: info@smilebrightdental.sg
+Phone: +65 6234 5678
+
+This email was sent to {{patient.email}}. If you have any questions, please contact us.
