@@ -48,9 +48,22 @@ async function loadBookings() {
     try {
         showLoading(true);
         
+        console.log('Current doctor session:', currentDoctor);
+        console.log('Doctor ID:', currentDoctor.doctorId);
+        
         // Fetch real data from API
-        const response = await fetch(`/api/booking/by-doctor.php?doctorId=${encodeURIComponent(currentDoctor.doctorId)}`);
-        const data = await response.json();
+        const apiUrl = `/SmileBright/api/booking/by-doctor.php?doctorId=${encodeURIComponent(currentDoctor.doctorId)}`;
+        console.log('API URL:', apiUrl);
+        
+        const response = await fetch(apiUrl);
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        const responseText = await response.text();
+        console.log('Raw response:', responseText.substring(0, 200) + '...');
+        
+        const data = JSON.parse(responseText);
+        console.log('Parsed data:', data);
         
         if (data.ok && data.bookings) {
             allBookings = data.bookings;
@@ -168,7 +181,7 @@ async function loadTimeSlots(date) {
     
     try {
         // Fetch real availability from API
-        const response = await fetch(`/api/booking/availability.php?clinicId=${encodeURIComponent(currentDoctor.clinicId || 'orchard')}&dentistId=${encodeURIComponent(currentDoctor.doctorId)}&date=${encodeURIComponent(date)}`);
+        const response = await fetch(`/SmileBright/api/booking/availability.php?clinicId=${encodeURIComponent(currentDoctor.clinicId || 'orchard')}&dentistId=${encodeURIComponent(currentDoctor.doctorId)}&date=${encodeURIComponent(date)}`);
         const data = await response.json();
         
         if (data.ok && data.slots && data.slots.length > 0) {
@@ -237,7 +250,7 @@ async function saveAppointmentChanges() {
         }
         
         // Make API call to save changes
-        const response = await fetch('/api/booking/update.php', {
+        const response = await fetch('/SmileBright/api/booking/update.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
