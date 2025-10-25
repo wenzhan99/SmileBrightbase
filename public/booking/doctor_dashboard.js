@@ -48,78 +48,27 @@ async function loadBookings() {
     try {
         showLoading(true);
         
-        // For demo purposes, we'll use mock data
-        // In production, this would fetch from your API
-        const mockBookings = generateMockBookings();
+        // Fetch real data from API
+        const response = await fetch(`/api/booking/by-doctor.php?doctorId=${encodeURIComponent(currentDoctor.doctorId)}`);
+        const data = await response.json();
         
-        allBookings = mockBookings;
-        applyFilters();
-        updateStats();
+        if (data.ok && data.bookings) {
+            allBookings = data.bookings;
+            applyFilters();
+            updateStats();
+        } else {
+            throw new Error(data.error || 'Failed to load bookings');
+        }
         
     } catch (error) {
         console.error('Error loading bookings:', error);
-        showError('Failed to load appointments');
+        showError('Failed to load appointments: ' + error.message);
     } finally {
         showLoading(false);
     }
 }
 
-// Generate mock data for demonstration
-function generateMockBookings() {
-    const today = new Date();
-    const bookings = [];
-    
-    // Generate some sample appointments
-    const sampleAppointments = [
-        {
-            referenceId: 'SB-20250125-001',
-            patientName: 'John Smith',
-            date: '2025-01-25',
-            time: '09:00',
-            service: 'General Checkup',
-            status: 'scheduled',
-            notes: 'Regular checkup'
-        },
-        {
-            referenceId: 'SB-20250125-002',
-            patientName: 'Sarah Johnson',
-            date: '2025-01-25',
-            time: '10:30',
-            service: 'Teeth Cleaning',
-            status: 'scheduled',
-            notes: 'First visit'
-        },
-        {
-            referenceId: 'SB-20250125-003',
-            patientName: 'Mike Chen',
-            date: '2025-01-26',
-            time: '14:00',
-            service: 'Dental Filling',
-            status: 'scheduled',
-            notes: 'Follow-up appointment'
-        },
-        {
-            referenceId: 'SB-20250124-001',
-            patientName: 'Emily Davis',
-            date: '2025-01-24',
-            time: '11:00',
-            service: 'Braces Consultation',
-            status: 'completed',
-            notes: 'Initial consultation completed'
-        },
-        {
-            referenceId: 'SB-20250123-001',
-            patientName: 'David Wilson',
-            date: '2025-01-23',
-            time: '15:30',
-            service: 'Tooth Extraction',
-            status: 'cancelled',
-            notes: 'Patient cancelled due to illness'
-        }
-    ];
-    
-    return sampleAppointments;
-}
+// Mock data generation function removed - now using real API data
 
 // Apply filters to bookings
 function applyFilters() {
@@ -133,7 +82,7 @@ function applyFilters() {
             matches = false;
         }
         
-        if (dateFilter && booking.date !== dateFilter) {
+        if (dateFilter && booking.dateIso !== dateFilter) {
             matches = false;
         }
         
@@ -161,10 +110,10 @@ function displayBookings() {
     tbody.innerHTML = filteredBookings.map(booking => `
         <tr>
             <td>${booking.referenceId}</td>
-            <td>${booking.patientName}</td>
-            <td>${formatDate(booking.date)}</td>
-            <td>${formatTime(booking.time)}</td>
-            <td>${booking.service}</td>
+            <td>${booking.firstName} ${booking.lastName}</td>
+            <td>${formatDate(booking.dateIso)}</td>
+            <td>${formatTime(booking.time24)}</td>
+            <td>${booking.serviceLabel}</td>
             <td><span class="status-badge status-${booking.status}">${capitalizeFirst(booking.status)}</span></td>
             <td>
                 <button class="btn-edit" onclick="editAppointment('${booking.referenceId}')">
@@ -179,7 +128,7 @@ function displayBookings() {
 function updateStats() {
     const total = allBookings.length;
     const scheduled = allBookings.filter(b => b.status === 'scheduled').length;
-    const today = allBookings.filter(b => b.date === getTodayDate()).length;
+    const today = allBookings.filter(b => b.dateIso === getTodayDate()).length;
     
     document.getElementById('statTotal').textContent = total;
     document.getElementById('statScheduled').textContent = scheduled;
@@ -193,20 +142,20 @@ function editAppointment(referenceId) {
     
     // Populate form
     document.getElementById('editReferenceId').value = booking.referenceId;
-    document.getElementById('editPatientName').value = booking.patientName;
-    document.getElementById('editDate').value = booking.date;
-    document.getElementById('editTime').value = booking.time;
+    document.getElementById('editPatientName').value = `${booking.firstName} ${booking.lastName}`;
+    document.getElementById('editDate').value = booking.dateIso;
+    document.getElementById('editTime').value = booking.time24.substring(0, 5); // Remove seconds if present
     document.getElementById('editNotes').value = booking.notes || '';
     
     // Load time slots for the selected date
-    loadTimeSlots(booking.date);
+    loadTimeSlots(booking.dateIso);
     
     // Show modal
     document.getElementById('editModal').classList.add('active');
 }
 
 // Load available time slots for a date
-function loadTimeSlots(date) {
+async function loadTimeSlots(date) {
     const grid = document.getElementById('timeSlotsGrid');
     
     if (!date) {
@@ -214,23 +163,30 @@ function loadTimeSlots(date) {
         return;
     }
     
-    // Generate time slots (9 AM to 5 PM, 30-minute intervals)
-    const timeSlots = [];
-    for (let hour = 9; hour <= 17; hour++) {
-        for (let minute = 0; minute < 60; minute += 30) {
-            const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-            timeSlots.push(timeString);
+    // Show loading state
+    grid.innerHTML = '<div style="text-align: center; color: #6b7a90; padding: 20px;">Loading available times...</div>';
+    
+    try {
+        // Fetch real availability from API
+        const response = await fetch(`/api/booking/availability.php?clinicId=${encodeURIComponent(currentDoctor.clinicId || 'orchard')}&dentistId=${encodeURIComponent(currentDoctor.doctorId)}&date=${encodeURIComponent(date)}`);
+        const data = await response.json();
+        
+        if (data.ok && data.slots && data.slots.length > 0) {
+            const currentTime = document.getElementById('editTime').value;
+            
+            grid.innerHTML = data.slots.map(time => `
+                <div class="time-slot ${time === currentTime ? 'selected' : ''}" 
+                     onclick="selectTimeSlot('${time}')">
+                    ${formatTime(time)}
+                </div>
+            `).join('');
+        } else {
+            grid.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 20px;">No available times for this date</div>';
         }
+    } catch (error) {
+        console.error('Error loading time slots:', error);
+        grid.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 20px;">Error loading times</div>';
     }
-    
-    const currentTime = document.getElementById('editTime').value;
-    
-    grid.innerHTML = timeSlots.map(time => `
-        <div class="time-slot ${time === currentTime ? 'selected' : ''}" 
-             onclick="selectTimeSlot('${time}')">
-            ${formatTime(time)}
-        </div>
-    `).join('');
 }
 
 // Select time slot
@@ -261,28 +217,48 @@ async function saveAppointmentChanges() {
             throw new Error('Booking not found');
         }
         
-        // Update the booking
-        allBookings[bookingIndex].date = newDate;
-        allBookings[bookingIndex].time = newTime;
-        allBookings[bookingIndex].notes = newNotes;
+        // Build changes object for API
+        const changes = {};
+        const originalBooking = allBookings[bookingIndex];
         
-        // In production, this would make an API call to save changes
-        console.log('Saving changes:', {
-            referenceId,
-            newDate,
-            newTime,
-            newNotes
+        if (newDate !== originalBooking.dateIso) {
+            changes.dateIso = newDate;
+        }
+        if (newTime !== originalBooking.time24.substring(0, 5)) {
+            changes.time24 = newTime;
+        }
+        if (newNotes !== (originalBooking.notes || '')) {
+            changes.notes = newNotes;
+        }
+        
+        if (Object.keys(changes).length === 0) {
+            alert('No changes detected');
+            return;
+        }
+        
+        // Make API call to save changes
+        const response = await fetch('/api/booking/update.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                referenceId: referenceId,
+                changes: changes
+            })
         });
         
-        // Show success message
-        alert('Appointment updated successfully!');
+        const data = await response.json();
         
-        // Close modal and refresh data
-        closeModal();
-        applyFilters();
-        updateStats();
-        
-        // In production, you would also trigger email notifications here
+        if (data.ok) {
+            alert('Appointment updated successfully! Email notifications sent.');
+            
+            // Close modal and refresh data
+            closeModal();
+            loadBookings(); // Reload from API
+        } else {
+            throw new Error(data.error || 'Update failed');
+        }
         
     } catch (error) {
         console.error('Error saving changes:', error);
