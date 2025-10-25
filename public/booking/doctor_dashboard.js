@@ -81,7 +81,76 @@ async function loadBookings() {
     }
 }
 
-// Mock data generation function removed - now using real API data
+// Export appointments to JSON
+function exportToJSON() {
+    const exportData = {
+        doctor: {
+            id: currentDoctor.doctorId,
+            name: currentDoctor.doctorName,
+            exportDate: new Date().toISOString()
+        },
+        appointments: allBookings.map(booking => ({
+            referenceId: booking.referenceId,
+            patient: {
+                firstName: booking.firstName,
+                lastName: booking.lastName,
+                fullName: `${booking.firstName} ${booking.lastName}`,
+                email: booking.email,
+                phone: booking.phone
+            },
+            appointment: {
+                date: booking.dateIso,
+                time: booking.time24,
+                dateDisplay: formatDate(booking.dateIso),
+                timeDisplay: formatTime(booking.time24)
+            },
+            service: {
+                code: booking.serviceCode,
+                label: booking.serviceLabel
+            },
+            experience: {
+                code: booking.experienceCode,
+                label: booking.experienceLabel
+            },
+            notes: booking.notes || '',
+            status: booking.status,
+            clinic: {
+                id: booking.clinicId,
+                name: booking.clinicName
+            },
+            dentist: {
+                id: booking.dentistId,
+                name: booking.dentistName
+            },
+            timestamps: {
+                createdAt: booking.createdAt,
+                updatedAt: booking.updatedAt
+            }
+        })),
+        statistics: {
+            total: allBookings.length,
+            scheduled: allBookings.filter(b => b.status === 'scheduled').length,
+            completed: allBookings.filter(b => b.status === 'completed').length,
+            cancelled: allBookings.filter(b => b.status === 'cancelled').length,
+            today: allBookings.filter(b => b.dateIso === getTodayDate()).length
+        }
+    };
+    
+    // Create and download JSON file
+    const jsonString = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `doctor_${currentDoctor.doctorId}_appointments_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    console.log('Appointments exported to JSON:', exportData);
+}
 
 // Apply filters to bookings
 function applyFilters() {
@@ -127,6 +196,8 @@ function displayBookings() {
             <td>${formatDate(booking.dateIso)}</td>
             <td>${formatTime(booking.time24)}</td>
             <td>${booking.serviceLabel}</td>
+            <td>${booking.experienceLabel || 'Not specified'}</td>
+            <td>${booking.notes || 'No additional notes'}</td>
             <td><span class="status-badge status-${booking.status}">${capitalizeFirst(booking.status)}</span></td>
             <td>
                 <button class="btn-edit" onclick="editAppointment('${booking.referenceId}')">

@@ -1,0 +1,92 @@
+{
+  "doctor": {
+    "id": "dr-chua",
+    "name": "Dr. Chua Wen Zhan",
+    "exportDate": "2025-10-25T08:00:00.000Z"
+  },
+  "appointments": [
+    {
+      "referenceId": "SB-20250125-0001",
+      "patient": {
+        "firstName": "Alice",
+        "lastName": "Johnson",
+        "fullName": "Alice Johnson",
+        "email": "alice.johnson@example.com",
+        "phone": "+65 9123 4567"
+      },
+      "appointment": {
+        "date": "2025-10-26",
+        "time": "11:00:00",
+        "dateDisplay": "Oct 26, 2025",
+        "timeDisplay": "11:00 AM"
+      },
+      "service": {
+        "code": "general_checkup",
+        "label": "General Checkup"
+      },
+      "experience": {
+        "code": "first_time",
+        "label": "First time patient"
+      },
+      "notes": "Patient requested reschedule - Test Update",
+      "status": "scheduled",
+      "clinic": {
+        "id": "orchard",
+        "name": "Orchard Clinic"
+      },
+      "dentist": {
+        "id": "dr-chua",
+        "name": "Dr. Chua Wen Zhan"
+      },
+      "timestamps": {
+        "createdAt": "2025-10-25 15:42:55",
+        "updatedAt": "2025-10-25 15:44:24"
+      }
+    },
+    {
+      "referenceId": "SB-20250125-0002",
+      "patient": {
+        "firstName": "Bob",
+        "lastName": "Smith",
+        "fullName": "Bob Smith",
+        "email": "bob.smith@example.com",
+        "phone": "+65 9234 5678"
+      },
+      "appointment": {
+        "date": "2025-10-27",
+        "time": "14:30:00",
+        "dateDisplay": "Oct 27, 2025",
+        "timeDisplay": "2:30 PM"
+      },
+      "service": {
+        "code": "cleaning",
+        "label": "Teeth Cleaning"
+      },
+      "experience": {
+        "code": "returning",
+        "label": "Returning patient"
+      },
+      "notes": "Rescheduled due to patient request - Email Test",
+      "status": "scheduled",
+      "clinic": {
+        "id": "orchard",
+        "name": "Orchard Clinic"
+      },
+      "dentist": {
+        "id": "dr-chua",
+        "name": "Dr. Chua Wen Zhan"
+      },
+      "timestamps": {
+        "createdAt": "2025-10-25 15:42:55",
+        "updatedAt": "2025-10-25 15:45:16"
+      }
+    }
+  ],
+  "statistics": {
+    "total": 9,
+    "scheduled": 7,
+    "completed": 1,
+    "cancelled": 1,
+    "today": 0
+  }
+}

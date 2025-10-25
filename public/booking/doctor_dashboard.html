@@ -124,6 +124,13 @@
     }
     .btn-edit:hover{background:var(--primary-600)}
     
+    .btn-export{
+      padding:8px 16px;border-radius:6px;border:none;
+      background:var(--success);color:#fff;font-size:0.9rem;
+      font-weight:600;cursor:pointer;margin-left:10px;
+    }
+    .btn-export:hover{background:#059669}
+    
     /* Modal */
     .modal{
       display:none;position:fixed;top:0;left:0;right:0;bottom:0;
@@ -268,6 +275,7 @@
     <div class="bookings-container">
       <div class="bookings-header">
         <h2>Your Appointments</h2>
+        <button class="btn-export" onclick="exportToJSON()">📄 Export JSON</button>
       </div>
       
       <div id="loadingState" class="loading">
@@ -287,6 +295,8 @@
               <th>Date</th>
               <th>Time</th>
               <th>Service</th>
+              <th>Previous Dental Experience</th>
+              <th>Additional Notes</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
