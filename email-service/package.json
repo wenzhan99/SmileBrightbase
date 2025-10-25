@@ -8,16 +8,23 @@
     "dev": "nodemon server.js",
     "test": "node test.js"
   },
-  "keywords": ["email", "nodemailer", "dental", "booking", "confirmation"],
+  "keywords": [
+    "email",
+    "nodemailer",
+    "dental",
+    "booking",
+    "confirmation"
+  ],
   "author": "Smile Bright Dental",
   "license": "MIT",
   "dependencies": {
-    "nodemailer": "^6.9.8",
-    "express": "^4.18.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "ics": "^2.44.0",
-    "moment-timezone": "^0.5.43"
+    "moment-timezone": "^0.5.43",
+    "node-fetch": "^3.3.2",
+    "nodemailer": "^6.9.8"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

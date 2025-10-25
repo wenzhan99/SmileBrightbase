@@ -87,18 +87,32 @@ try {
     $allowedFields = [
         'dentist_id', 'dentist_name', 'clinic_id', 'clinic_name',
         'service_code', 'service_label', 'preferred_date', 'preferred_time',
-        'dateIso', 'time24', 'email', 'phone', 'notes'
+        'dateIso', 'time24', 'email', 'phone', 'notes',
+        // Add camelCase versions for frontend compatibility
+        'dentistId', 'dentistName', 'clinicId', 'clinicName', 'serviceCode', 'serviceLabel'
     ];
 
     $validChanges = [];
     foreach ($changes as $field => $value) {
         if (in_array($field, $allowedFields)) {
-            // Map new field names to database field names
+            // Map field names to database field names
             $dbField = $field;
             if ($field === 'dateIso') {
                 $dbField = 'preferred_date';
             } elseif ($field === 'time24') {
                 $dbField = 'preferred_time';
+            } elseif ($field === 'dentistId') {
+                $dbField = 'dentist_id';
+            } elseif ($field === 'dentistName') {
+                $dbField = 'dentist_name';
+            } elseif ($field === 'clinicId') {
+                $dbField = 'clinic_id';
+            } elseif ($field === 'clinicName') {
+                $dbField = 'clinic_name';
+            } elseif ($field === 'serviceCode') {
+                $dbField = 'service_code';
+            } elseif ($field === 'serviceLabel') {
+                $dbField = 'service_label';
             }
             $validChanges[$dbField] = $value;
         }
@@ -209,10 +223,68 @@ try {
         }
     }
 
-    $mysqli->close();
-
-    // Send update emails (temporarily disabled for testing)
+    // Send update emails
     $emailSent = false;
+    try {
+        // Get updated booking data
+        $stmt = $mysqli->prepare("SELECT * FROM bookings WHERE reference_id = ?");
+        $stmt->bind_param('s', $referenceId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $updatedBooking = $result->fetch_assoc();
+        $stmt->close();
+        
+        if ($updatedBooking) {
+            // Send email notification about the update
+            $emailData = [
+                'referenceId' => $updatedBooking['reference_id'],
+                'patient' => [
+                    'firstName' => explode(' ', $updatedBooking['full_name'])[0] ?? 'Patient',
+                    'lastName' => implode(' ', array_slice(explode(' ', $updatedBooking['full_name']), 1)) ?? '',
+                    'email' => $updatedBooking['email'],
+                    'phone' => $updatedBooking['phone']
+                ],
+                'appointment' => [
+                    'dentistId' => $updatedBooking['dentist_id'],
+                    'dentistName' => $updatedBooking['dentist_name'],
+                    'clinicId' => $updatedBooking['clinic_id'],
+                    'clinicName' => $updatedBooking['clinic_name'],
+                    'serviceCode' => $updatedBooking['service_code'],
+                    'serviceLabel' => $updatedBooking['service_label'],
+                    'dateIso' => $updatedBooking['preferred_date'],
+                    'time24' => $updatedBooking['preferred_time'],
+                    'dateDisplay' => date('l, j F Y', strtotime($updatedBooking['preferred_date'])),
+                    'timeDisplay' => date('g:i A', strtotime($updatedBooking['preferred_time']))
+                ],
+                'notes' => $updatedBooking['message'],
+                'updateType' => 'booking_updated'
+            ];
+            
+            // Send email via the email service
+            $emailServiceUrl = 'http://localhost:4001/send-booking-emails';
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $emailServiceUrl);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($emailData));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'X-Email-Token: sb_email_token_use_this_exact_string'
+            ]);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            
+            $emailResponse = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            
+            $emailSent = ($httpCode === 200);
+        }
+    } catch (Exception $e) {
+        error_log('Email sending failed: ' . $e->getMessage());
+        $emailSent = false;
+    }
+
+    $mysqli->close();
 
     // Set success response
     $response = [

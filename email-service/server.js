@@ -79,7 +79,8 @@ function createCalendarEvent(appointmentData) {
 
 // Helper function to generate patient email HTML
 function generatePatientEmailHTML(data) {
-    const { referenceId, patient, appointment, manageLink } = data;
+    const { referenceId, patient, appointment, manageLink, updateType } = data;
+    const isUpdate = updateType === 'booking_updated';
     
     return `
 <!DOCTYPE html>
@@ -108,14 +109,14 @@ function generatePatientEmailHTML(data) {
 <body>
     <div class="container">
         <div class="header">
-            <h1>✅ Appointment Confirmed</h1>
-            <p>Your dental appointment has been successfully booked</p>
+            <h1>${isUpdate ? '📅 Appointment Updated' : '✅ Appointment Confirmed'}</h1>
+            <p>${isUpdate ? 'Your appointment details have been updated' : 'Your dental appointment has been successfully booked'}</p>
         </div>
         
         <div class="content">
             <p>Dear ${patient.firstName},</p>
             
-            <p>Thank you for choosing Smile Bright Dental! Your appointment has been confirmed.</p>
+            <p>${isUpdate ? 'Your appointment details have been updated. Here are your new appointment details:' : 'Thank you for choosing Smile Bright Dental! Your appointment has been confirmed.'}</p>
             
             <div class="reference">
                 <strong>Reference ID:</strong><br>
@@ -178,7 +179,8 @@ function generatePatientEmailHTML(data) {
 
 // Helper function to generate clinic email HTML
 function generateClinicEmailHTML(data) {
-    const { referenceId, patient, appointment, notes } = data;
+    const { referenceId, patient, appointment, notes, updateType } = data;
+    const isUpdate = updateType === 'booking_updated';
     
     return `
 <!DOCTYPE html>
@@ -208,8 +210,8 @@ function generateClinicEmailHTML(data) {
 <body>
     <div class="container">
         <div class="header">
-            <h1>🦷 New Booking Received</h1>
-            <p>A new appointment has been booked</p>
+            <h1>${isUpdate ? '📅 Booking Updated' : '🦷 New Booking Received'}</h1>
+            <p>${isUpdate ? 'An appointment has been updated' : 'A new appointment has been booked'}</p>
         </div>
         
         <div class="content">
@@ -294,7 +296,7 @@ app.post('/send-booking-emails', async (req, res) => {
             return res.status(401).json({ ok: false, message: 'Invalid email token' });
         }
         
-        const { referenceId, patient, appointment, notes, consent } = req.body;
+        const { referenceId, patient, appointment, notes, consent, updateType } = req.body;
         
         // Validate required fields
         if (!referenceId || !patient || !appointment) {
@@ -320,14 +322,20 @@ app.post('/send-booking-emails', async (req, res) => {
             patient,
             appointment,
             manageLink,
-            notes
+            notes,
+            updateType
         };
+        
+        // Determine email type and content
+        const isUpdate = updateType === 'booking_updated';
+        const emailSubjectPrefix = isUpdate ? 'Your Smile Bright appointment has been updated' : 'Your Smile Bright appointment is confirmed';
+        const clinicSubjectPrefix = isUpdate ? 'Booking updated' : 'New booking';
         
         // Send patient confirmation email
         const patientMailOptions = {
             from: `"${process.env.FROM_NAME}" <${process.env.FROM_EMAIL}>`,
             to: patient.email,
-            subject: `Your Smile Bright appointment is confirmed — Ref ${referenceId}`,
+            subject: `${emailSubjectPrefix} — Ref ${referenceId}`,
             html: generatePatientEmailHTML(emailData),
             attachments: icsContent ? [{
                 filename: `appointment-${referenceId}.ics`,
@@ -340,7 +348,7 @@ app.post('/send-booking-emails', async (req, res) => {
         const clinicMailOptions = {
             from: `"${process.env.FROM_NAME}" <${process.env.FROM_EMAIL}>`,
             to: process.env.CLINIC_EMAIL,
-            subject: `New booking — ${patient.firstName} ${patient.lastName} — ${appointment.dateDisplay} ${appointment.timeDisplay} — Ref ${referenceId}`,
+            subject: `${clinicSubjectPrefix} — ${patient.firstName} ${patient.lastName} — ${appointment.dateDisplay} ${appointment.timeDisplay} — Ref ${referenceId}`,
             html: generateClinicEmailHTML(emailData),
             attachments: icsContent ? [{
                 filename: `appointment-${referenceId}.ics`,
