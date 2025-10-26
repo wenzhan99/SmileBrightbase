@@ -417,7 +417,15 @@
             </div>
             <div class="form-group">
               <label for="editTime">Time</label>
-              <input type="time" id="editTime" name="time24" required>
+              <select id="editTime" name="time24" required>
+                <option value="09:00">09:00</option>
+                <option value="10:00">10:00</option>
+                <option value="11:00">11:00</option>
+                <option value="14:00">14:00</option>
+                <option value="15:00">15:00</option>
+                <option value="16:00">16:00</option>
+                <option value="17:00">17:00</option>
+              </select>
             </div>
             <div class="form-group">
               <label for="editEmail">Email</label>
@@ -597,11 +605,8 @@
       
       const timeValue = booking.time24 || booking.preferred_time;
       if (timeValue) {
-        const [hours, minutes] = timeValue.split(':');
-        const hour = parseInt(hours);
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        const displayHour = hour % 12 || 12;
-        document.getElementById('displayTime').textContent = `${displayHour}:${minutes} ${ampm}`;
+        // Display time in 24-hour format (e.g., 09:00, 14:00)
+        document.getElementById('displayTime').textContent = timeValue.substring(0, 5);
       }
       
       document.getElementById('currentBooking').style.display = 'block';
@@ -670,6 +675,9 @@
         return;
       }
       
+      // Fixed time slots in 24-hour format
+      const FIXED_TIME_SLOTS = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'];
+      
       try {
         const response = await fetch(`/SmileBright/api/booking/availability.php?clinicId=${encodeURIComponent(clinicId)}&dentistId=${encodeURIComponent(dentistId)}&date=${encodeURIComponent(date)}`);
         const data = await response.json();
@@ -681,21 +689,41 @@
           // Clear existing options
           timeSelect.innerHTML = '';
           
-          // Add available time slots
-          data.slots.forEach(time => {
+          // Add only the 7 fixed time slots
+          FIXED_TIME_SLOTS.forEach(time => {
             const option = document.createElement('option');
             option.value = time;
             option.textContent = time;
+            
+            // Disable if not available (unless it's the current booking time)
+            if (!data.slots.includes(time) && time !== currentValue) {
+              option.disabled = true;
+              option.textContent = `${time} (Unavailable)`;
+            }
+            
             timeSelect.appendChild(option);
           });
           
           // Restore previous selection if still available
-          if (currentValue && data.slots.includes(currentValue)) {
+          if (currentValue && FIXED_TIME_SLOTS.includes(currentValue)) {
             timeSelect.value = currentValue;
           }
         }
       } catch (error) {
         console.error('Error fetching availability:', error);
+        // On error, just show the fixed slots
+        const timeSelect = document.getElementById('editTime');
+        const currentValue = timeSelect.value;
+        timeSelect.innerHTML = '';
+        FIXED_TIME_SLOTS.forEach(time => {
+          const option = document.createElement('option');
+          option.value = time;
+          option.textContent = time;
+          timeSelect.appendChild(option);
+        });
+        if (currentValue && FIXED_TIME_SLOTS.includes(currentValue)) {
+          timeSelect.value = currentValue;
+        }
       }
     }
 
