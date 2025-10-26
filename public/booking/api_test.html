@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Diagnostic Test</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #f5f5f5; }
+    .test { background: white; margin: 10px 0; padding: 15px; border-radius: 8px; }
+    .test h3 { margin: 0 0 10px 0; color: #1e4b86; }
+    .success { color: #10b981; font-weight: bold; }
+    .error { color: #ef4444; font-weight: bold; }
+    .info { color: #6b7a90; }
+    pre { background: #f5f7fb; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    button { background: #1e4b86; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin: 5px; }
+    button:hover { background: #173b6a; }
+  </style>
+</head>
+<body>
+  <h1>🔍 SmileBright API Diagnostic Test</h1>
+  
+  <div class="test">
+    <h3>Test 1: Check File Paths</h3>
+    <p><strong>Current page URL:</strong> <span id="currentUrl"></span></p>
+    <p><strong>Expected API base:</strong> <code>../../api/booking/</code></p>
+    <p class="info">This should resolve from /public/booking/ to /api/booking/</p>
+  </div>
+
+  <div class="test">
+    <h3>Test 2: Fetch Bookings by Doctor (Dr. Lau Gwen)</h3>
+    <button onclick="testByDoctor('dr-lau-gwen')">Test dr-lau-gwen</button>
+    <button onclick="testByDoctor('dr-lau')">Test dr-lau (old)</button>
+    <button onclick="testByDoctor('dr-gwen')">Test dr-gwen</button>
+    <div id="byDoctorResult"></div>
+  </div>
+
+  <div class="test">
+    <h3>Test 3: Check Session Storage</h3>
+    <button onclick="checkSession()">Check Current Session</button>
+    <button onclick="clearSession()">Clear Session</button>
+    <div id="sessionResult"></div>
+  </div>
+
+  <div class="test">
+    <h3>Test 4: Direct Database Check</h3>
+    <button onclick="testDatabase()">Check All Bookings</button>
+    <div id="databaseResult"></div>
+  </div>
+
+  <script>
+    // Show current URL
+    document.getElementById('currentUrl').textContent = window.location.href;
+
+    async function testByDoctor(doctorId) {
+      const resultDiv = document.getElementById('byDoctorResult');
+      resultDiv.innerHTML = '<p class="info">Testing doctor ID: ' + doctorId + '...</p>';
+      
+      try {
+        const url = `../../api/booking/by-doctor.php?doctorId=${encodeURIComponent(doctorId)}`;
+        console.log('Fetching:', url);
+        
+        const response = await fetch(url);
+        console.log('Response status:', response.status);
+        
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (data.ok) {
+          resultDiv.innerHTML = `
+            <p class="success">✅ SUCCESS</p>
+            <p><strong>Doctor ID tested:</strong> ${doctorId}</p>
+            <p><strong>Bookings found:</strong> ${data.total}</p>
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+          `;
+        } else {
+          resultDiv.innerHTML = `
+            <p class="error">❌ API returned error</p>
+            <p><strong>Error:</strong> ${data.error}</p>
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+          `;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <p class="error">❌ FETCH ERROR</p>
+          <p><strong>Error:</strong> ${error.message}</p>
+          <p class="info">This usually means the API file is not found or path is wrong.</p>
+        `;
+        console.error('Fetch error:', error);
+      }
+    }
+
+    function checkSession() {
+      const resultDiv = document.getElementById('sessionResult');
+      const session = sessionStorage.getItem('doctorSession');
+      
+      if (session) {
+        try {
+          const data = JSON.parse(session);
+          resultDiv.innerHTML = `
+            <p class="success">✅ Session exists</p>
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+            <p class="info">Login time: ${new Date(data.loginTime).toLocaleString()}</p>
+          `;
+        } catch (e) {
+          resultDiv.innerHTML = `
+            <p class="error">❌ Session exists but is corrupted</p>
+            <pre>${session}</pre>
+          `;
+        }
+      } else {
+        resultDiv.innerHTML = '<p class="info">No session found. You need to login first.</p>';
+      }
+    }
+
+    function clearSession() {
+      sessionStorage.removeItem('doctorSession');
+      document.getElementById('sessionResult').innerHTML = '<p class="success">✅ Session cleared. Please login again.</p>';
+    }
+
+    async function testDatabase() {
+      const resultDiv = document.getElementById('databaseResult');
+      resultDiv.innerHTML = '<p class="info">Fetching all bookings (no filter)...</p>';
+      
+      // Test each possible doctor ID
+      const doctorIds = ['dr-lau-gwen', 'dr-lau', 'dr-gwen', 'dr-chua', 'dr-sarah', 'dr-james', 'dr-aisha', 'dr-alex'];
+      let results = [];
+      
+      for (const doctorId of doctorIds) {
+        try {
+          const url = `../../api/booking/by-doctor.php?doctorId=${encodeURIComponent(doctorId)}`;
+          const response = await fetch(url);
+          const data = await response.json();
+          
+          if (data.ok && data.total > 0) {
+            results.push(`<p><strong>${doctorId}:</strong> ${data.total} booking(s) found</p>`);
+          }
+        } catch (e) {
+          // Skip errors
+        }
+      }
+      
+      if (results.length > 0) {
+        resultDiv.innerHTML = `
+          <p class="success">✅ Found bookings:</p>
+          ${results.join('')}
+          <p class="info">Try logging in with the doctor IDs that have bookings.</p>
+        `;
+      } else {
+        resultDiv.innerHTML = `
+          <p class="error">❌ No bookings found for any doctor ID</p>
+          <p class="info">Check database connection or if bookings table has data.</p>
+        `;
+      }
+    }
+
+    // Auto-check session on load
+    window.addEventListener('DOMContentLoaded', checkSession);
+  </script>
+</body>
+</html>
+

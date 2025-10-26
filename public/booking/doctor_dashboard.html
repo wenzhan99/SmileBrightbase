@@ -85,7 +85,7 @@
     /* Bookings Table */
     .bookings-container{
       background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);
-      padding:20px;
+      padding:20px;overflow-x:auto;
     }
     .bookings-header{
       display:flex;justify-content:space-between;align-items:center;
@@ -95,41 +95,67 @@
       color:var(--primary);
     }
     
+    .table-wrapper{
+      overflow-x:auto;
+    }
     table{
-      width:100%;border-collapse:collapse;
+      width:100%;border-collapse:collapse;min-width:1600px;
     }
     th{
-      background:var(--bg);padding:12px;text-align:left;
+      background:var(--bg);padding:12px 8px;text-align:left;
       font-weight:600;border-bottom:2px solid var(--ring);
+      position:sticky;top:0;z-index:10;white-space:nowrap;
+      font-size:0.85rem;
     }
     td{
-      padding:12px;border-bottom:1px solid var(--ring);
+      padding:10px 8px;border-bottom:1px solid var(--ring);
+      font-size:0.9rem;max-width:200px;overflow:hidden;
+      text-overflow:ellipsis;white-space:nowrap;
     }
+    td.cell-expand{white-space:normal;max-width:250px}
     tr:hover{
       background:var(--bg);
     }
     
     .status-badge{
-      padding:4px 12px;border-radius:12px;font-size:0.85rem;
-      font-weight:600;display:inline-block;
+      padding:4px 10px;border-radius:12px;font-size:0.8rem;
+      font-weight:600;display:inline-block;white-space:nowrap;
     }
-    .status-scheduled{background:#dbeafe;color:#1e40af}
+    .status-booked{background:#e0e7ff;color:#3730a3}
+    .status-confirmed{background:#dbeafe;color:#1e40af}
+    .status-checked-in{background:#fef3c7;color:#92400e}
+    .status-in-progress{background:#fef08a;color:#854d0e}
     .status-completed{background:#d1fae5;color:#065f46}
     .status-cancelled{background:#fee2e2;color:#991b1b}
+    .status-no-show{background:#fce7f3;color:#9f1239}
+    .status-rescheduled{background:#e0e7ff;color:#5b21b6}
+    .status-scheduled{background:#dbeafe;color:#1e40af}
+    
+    .urgency-badge{
+      padding:3px 8px;border-radius:8px;font-size:0.75rem;
+      font-weight:600;display:inline-block;
+    }
+    .urgency-routine{background:#f3f4f6;color:#4b5563}
+    .urgency-priority{background:#fef3c7;color:#92400e}
+    .urgency-emergency{background:#fee2e2;color:#991b1b}
+    
+    .medical-flags{
+      display:flex;gap:4px;flex-wrap:wrap;
+    }
+    .flag-badge{
+      padding:2px 6px;border-radius:6px;font-size:0.7rem;
+      background:#fee2e2;color:#991b1b;font-weight:600;
+    }
+    .flag-na{
+      background:#f3f4f6;color:#6b7280;
+    }
     
     .btn-edit{
       padding:6px 12px;border-radius:6px;border:none;
-      background:var(--primary);color:#fff;font-size:0.85rem;
-      font-weight:600;cursor:pointer;
+      background:var(--primary);color:#fff;font-size:0.8rem;
+      font-weight:600;cursor:pointer;white-space:nowrap;
     }
     .btn-edit:hover{background:var(--primary-600)}
-    
-    .btn-export{
-      padding:8px 16px;border-radius:6px;border:none;
-      background:var(--success);color:#fff;font-size:0.9rem;
-      font-weight:600;cursor:pointer;margin-left:10px;
-    }
-    .btn-export:hover{background:#059669}
     
     /* Modal */
     .modal{
@@ -243,9 +269,23 @@
         <label>Status</label>
         <select id="filterStatus">
           <option value="">All Status</option>
-          <option value="scheduled">Scheduled</option>
+          <option value="booked">Booked</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="checked-in">Checked-In</option>
+          <option value="in progress">In Progress</option>
           <option value="completed">Completed</option>
           <option value="cancelled">Cancelled</option>
+          <option value="no-show">No-Show</option>
+          <option value="rescheduled">Rescheduled</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Urgency</label>
+        <select id="filterUrgency">
+          <option value="">All Urgency</option>
+          <option value="routine">Routine</option>
+          <option value="priority">Priority</option>
+          <option value="emergency">Emergency</option>
         </select>
       </div>
       <div class="filter-group">
@@ -275,7 +315,6 @@
     <div class="bookings-container">
       <div class="bookings-header">
         <h2>Your Appointments</h2>
-        <button class="btn-export" onclick="exportToJSON()">📄 Export JSON</button>
       </div>
       
       <div id="loadingState" class="loading">
@@ -287,24 +326,30 @@
       </div>
       
       <div id="bookingsTable" style="display:none">
-        <table>
-          <thead>
-            <tr>
-              <th>Ref ID</th>
-              <th>Patient</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Service</th>
-              <th>Previous Dental Experience</th>
-              <th>Additional Notes</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="bookingsBody">
-            <!-- Bookings will be loaded here -->
-          </tbody>
-        </table>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Ref ID</th>
+                <th>Patient</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Service</th>
+                <th>Urgency</th>
+                <th>Last Seen</th>
+                <th>Recall Due</th>
+                <th>Previous Dental Experience</th>
+                <th>Medical Flags</th>
+                <th>Additional Notes</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="bookingsBody">
+              <!-- Bookings will be loaded here -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -341,8 +386,57 @@
         </div>
         
         <div class="form-group">
-          <label>Notes</label>
-          <textarea id="editNotes" placeholder="Add any notes..."></textarea>
+          <label>Service</label>
+          <input type="text" id="editService" readonly style="background:#f5f7fb">
+        </div>
+        
+        <div class="form-group">
+          <label>Urgency</label>
+          <select id="editUrgency">
+            <option value="Routine">Routine</option>
+            <option value="Priority">Priority</option>
+            <option value="Emergency">Emergency</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Status</label>
+          <select id="editStatus">
+            <option value="Booked">Booked</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Checked-In">Checked-In</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="No-Show">No-Show</option>
+            <option value="Rescheduled">Rescheduled</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Last Seen</label>
+          <input type="date" id="editLastSeen">
+        </div>
+        
+        <div class="form-group">
+          <label>Recall Due</label>
+          <input type="date" id="editRecallDue">
+        </div>
+        
+        <div class="form-group">
+          <label>Previous Dental Experience</label>
+          <textarea id="editPreviousExperience" placeholder="Patient's dental history and preferences..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Medical Flags</label>
+          <input type="text" id="editMedicalFlags" placeholder="e.g., Asthma, Hypertension (comma-separated)">
+          <small style="color:var(--muted);font-size:0.85rem;">Leave empty for N/A</small>
+        </div>
+        
+        <div class="form-group">
+          <label>Additional Notes</label>
+          <textarea id="editAdditionalNotes" placeholder="Any additional notes about the appointment..."></textarea>
         </div>
         
         <div class="modal-actions">
@@ -353,6 +447,7 @@
     </div>
   </div>
 
-  <script src="doctor_dashboard.js"></script>
+  <!-- Add version parameter to force reload of JS file -->
+  <script src="doctor_dashboard.js?v=20251026-24hr"></script>
 </body>
 </html>

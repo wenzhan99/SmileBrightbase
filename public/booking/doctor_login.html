@@ -89,7 +89,7 @@
         <select id="doctorId" required>
           <option value="">-- Select Your Name --</option>
           <option value="dr-chua">Dr. Chua Wen Zhan</option>
-          <option value="dr-lau">Dr. Lau Gwen</option>
+          <option value="dr-lau-gwen">Dr. Lau Gwen</option>
           <option value="dr-sarah">Dr. Sarah Tan</option>
           <option value="dr-james">Dr. James Lim</option>
           <option value="dr-aisha">Dr. Aisha Rahman</option>
@@ -112,13 +112,14 @@
 
   <script>
     // Simple password system (in production, use proper authentication)
+    // Using canonical identifiers to match booking database
     const doctorCredentials = {
-      'dr-chua': { name: 'Dr. Chua Wen Zhan', password: 'chua123' },
-      'dr-lau': { name: 'Dr. Lau Gwen', password: 'lau123' },
-      'dr-sarah': { name: 'Dr. Sarah Tan', password: 'sarah123' },
-      'dr-james': { name: 'Dr. James Lim', password: 'james123' },
-      'dr-aisha': { name: 'Dr. Aisha Rahman', password: 'aisha123' },
-      'dr-alex': { name: 'Dr. Alex Lee', password: 'alex123' }
+      'dr-chua': { name: 'Dr. Chua Wen Zhan', password: 'chua123', canonical: 'dr-chua' },
+      'dr-lau-gwen': { name: 'Dr. Lau Gwen', password: 'lau123', canonical: 'dr-lau-gwen' },
+      'dr-sarah': { name: 'Dr. Sarah Tan', password: 'sarah123', canonical: 'dr-sarah' },
+      'dr-james': { name: 'Dr. James Lim', password: 'james123', canonical: 'dr-james' },
+      'dr-aisha': { name: 'Dr. Aisha Rahman', password: 'aisha123', canonical: 'dr-aisha' },
+      'dr-alex': { name: 'Dr. Alex Lee', password: 'alex123', canonical: 'dr-alex' }
     };
     
     document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -144,9 +145,9 @@
         return;
       }
       
-      // Store session
+      // Store session with canonical identifier
       sessionStorage.setItem('doctorSession', JSON.stringify({
-        doctorId: doctorId,
+        doctorId: doctor.canonical || doctorId,
         doctorName: doctor.name,
         loginTime: new Date().toISOString()
       }));

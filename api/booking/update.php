@@ -87,11 +87,15 @@ try {
     $allowedFields = [
         'dentist_id', 'dentist_name', 'clinic_id', 'clinic_name',
         'service_code', 'service_label', 'preferred_date', 'preferred_time',
-        'dateIso', 'time24', 'email', 'phone', 'notes',
+        'dateIso', 'time24', 'email', 'phone', 'notes', 'status',
         // Add camelCase versions for frontend compatibility
-        'dentistId', 'dentistName', 'clinicId', 'clinicName', 'serviceCode', 'serviceLabel'
+        'dentistId', 'dentistName', 'clinicId', 'clinicName', 'serviceCode', 'serviceLabel',
+        'additionalNotes' // Map to 'notes' in DB
     ];
 
+    // Allowed status values (must match database)
+    $allowedStatuses = ['scheduled', 'confirmed', 'cancelled', 'completed', 'rescheduled'];
+    
     $validChanges = [];
     foreach ($changes as $field => $value) {
         if (in_array($field, $allowedFields)) {
@@ -113,7 +117,19 @@ try {
                 $dbField = 'service_code';
             } elseif ($field === 'serviceLabel') {
                 $dbField = 'service_label';
+            } elseif ($field === 'additionalNotes') {
+                $dbField = 'notes';
             }
+            
+            // Validate and normalize status
+            if ($field === 'status') {
+                $value = strtolower($value); // Normalize to lowercase
+                if (!in_array($value, $allowedStatuses)) {
+                    // Skip invalid status values
+                    continue;
+                }
+            }
+            
             $validChanges[$dbField] = $value;
         }
     }
