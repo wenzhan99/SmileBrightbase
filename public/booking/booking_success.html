@@ -450,7 +450,7 @@
             <div class="action-buttons">
             <a href="manage_booking.html" class="action-button primary" id="manageBookingBtn" style="display: none;">Manage This Booking</a>
             <a href="../index.html" class="action-button secondary">Return to Home</a>
-            <a href="../book_appointment.html" class="action-button secondary">Book Another Appointment</a>
+            <a href="booking_form.html" class="action-button secondary">Book Another Appointment</a>
             </div>
         </div>
       </div>
@@ -508,128 +508,41 @@
   </footer>
 
     <script>
-    // Initialize page
     document.addEventListener('DOMContentLoaded', function() {
-      loadBookingDetails();
-    });
-
-    function loadBookingDetails() {
-        // Get booking reference from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const ref = urlParams.get('ref');
-
-      if (ref) {
-        // Update reference ID
-        document.getElementById('referenceId').textContent = ref;
-        
-        // Fetch booking details from API
-        fetch(`/SmileBright/api/booking/by-ref.php?ref=${encodeURIComponent(ref)}`)
-          .then(async response => {
-            const text = await response.text();
-            let data;
-            
-            try {
-              data = JSON.parse(text);
-            } catch (e) {
-              console.error('Non-JSON response:', text);
-              throw new Error(`Invalid response format (status ${response.status})`);
+      const stored = localStorage.getItem('lastBooking');
+      if (stored) {
+        try {
+          const data = JSON.parse(stored);
+          if (data.referenceId) {
+            document.getElementById('referenceId').textContent = data.referenceId;
+            const manageBtn = document.getElementById('manageBookingBtn');
+            if (manageBtn) {
+              manageBtn.href = `manage_booking.html?ref=${data.referenceId}`;
+              manageBtn.style.display = 'inline-block';
             }
-            
-            if (data.ok && data.booking) {
-              const booking = data.booking;
-              
-              // Update booking details
-              document.getElementById('dentistName').textContent = booking.dentistName || 'Unknown';
-              document.getElementById('clinicName').textContent = booking.clinicName || 'Unknown';
-              
-              if (booking.dateIso) {
-                const date = new Date(booking.dateIso + 'T00:00:00');
-                document.getElementById('appointmentDate').textContent = date.toLocaleDateString('en-SG', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                });
-              }
-              
-              if (booking.time24) {
-                const [hours, minutes] = booking.time24.split(':');
-                const hour = parseInt(hours);
-                const ampm = hour >= 12 ? 'PM' : 'AM';
-                const displayHour = hour % 12 || 12;
-                document.getElementById('appointmentTime').textContent = `${displayHour}:${minutes} ${ampm}`;
-              }
-              
-              document.getElementById('serviceType').textContent = booking.serviceLabel || 'General Checkup';
-              
-              // Show manage booking button
-              const manageBtn = document.getElementById('manageBookingBtn');
-              if (manageBtn) {
-                manageBtn.href = `manage_booking.html?ref=${booking.referenceId}`;
-                manageBtn.style.display = 'inline-block';
-              }
-            } else {
-              throw new Error(data.error || 'Booking not found');
-            }
-          })
-          .catch(error => {
-            console.error('Error loading booking details:', error);
-            
-            // Fallback to localStorage if API fails
-            const lastBooking = localStorage.getItem('lastBooking');
-            if (lastBooking) {
-              try {
-                const data = JSON.parse(lastBooking);
-                if (data.dentistName) {
-                  document.getElementById('dentistName').textContent = data.dentistName;
-                }
-                if (data.clinicName) {
-                  document.getElementById('clinicName').textContent = data.clinicName;
-                }
-                if (data.dateIso) {
-                  const date = new Date(data.dateIso + 'T00:00:00');
-                  document.getElementById('appointmentDate').textContent = date.toLocaleDateString('en-SG', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  });
-                }
-                if (data.time24) {
-                  const [hours, minutes] = data.time24.split(':');
-                  const hour = parseInt(hours);
-                  const ampm = hour >= 12 ? 'PM' : 'AM';
-                  const displayHour = hour % 12 || 12;
-                  document.getElementById('appointmentTime').textContent = `${displayHour}:${minutes} ${ampm}`;
-                }
-                if (data.serviceLabel) {
-                  document.getElementById('serviceType').textContent = data.serviceLabel;
-                }
-              } catch (e) {
-                console.warn('Error parsing saved booking data');
-              }
-            } else {
-              // Show error message
-              document.getElementById('bookingDetails').innerHTML = `
-                <h3>Booking Details</h3>
-                <div class="error-message">
-                  <strong>Error:</strong> Unable to load booking details. Reference ID: ${ref}
-                </div>
-                <p><a href="booking_form.html">Return to booking form</a></p>
-              `;
-            }
-          });
-        
-        // Clear saved schedule data
-        localStorage.removeItem('chosenSchedule');
+          }
+          if (data.dentistName) document.getElementById('dentistName').textContent = data.dentistName;
+          if (data.clinicName) document.getElementById('clinicName').textContent = data.clinicName;
+          if (data.dateIso) {
+            const d = new Date(data.dateIso + 'T00:00:00');
+            document.getElementById('appointmentDate').textContent = d.toLocaleDateString('en-SG', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+          }
+          if (data.time24) {
+            const [h, m] = data.time24.split(':');
+            const hour = parseInt(h, 10);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            document.getElementById('appointmentTime').textContent = `${displayHour}:${m} ${ampm}`;
+          }
+          if (data.serviceLabel) document.getElementById('serviceType').textContent = data.serviceLabel;
+        } catch (e) {
+          document.getElementById('bookingDetails').style.display = 'none';
+        }
       } else {
-        // No booking ID, show generic message
         document.getElementById('bookingDetails').style.display = 'none';
-        document.querySelector('.success-title').textContent = 'Thank You!';
-        document.querySelector('.success-message').textContent = 
-          'Your appointment request has been received. We will contact you shortly to confirm the details.';
       }
-    }
+      localStorage.removeItem('chosenSchedule');
+    });
     </script>
 </body>
 </html>

@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Smile Bright Dental — Manage Your Booking</title>
+  
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root{
@@ -238,6 +239,7 @@
   </style>
 </head>
 <body>
+  
 
   <!-- ===== HEADER ===== -->
   <nav class="nav">
@@ -310,7 +312,7 @@
       <!-- Header Band -->
       <div class="header-band">
         <h1>Manage Your Booking</h1>
-        <a href="schedule.html" class="breadcrumb">← Back to Schedule</a>
+        <a href="book_appointment.html" class="breadcrumb">← Back</a>
       </div>
 
       <!-- Status Banner -->
@@ -373,10 +375,14 @@
       </div>
 
       <!-- Edit Form -->
-      <div id="editForm" class="edit-section" style="display: none;">
+      <div id="editForm" class="edit-section" style="display: block;">
         <h3>Update Booking Details</h3>
-        <form id="updateForm">
+        <form method="post" action="/SmileBrightbase/api/base_booking_update.php">
           <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="referenceId">Reference ID *</label>
+              <input type="text" id="referenceId" name="reference_id" required placeholder="SB-2025XXXX-XXXX">
+            </div>
             <div class="form-group">
               <label for="editDentist">Dentist</label>
               <select id="editDentist" name="dentistId">
@@ -413,19 +419,11 @@
             </div>
             <div class="form-group">
               <label for="editDate">Date</label>
-              <input type="date" id="editDate" name="dateIso" required>
+              <input type="date" id="editDate" name="date_iso">
             </div>
             <div class="form-group">
               <label for="editTime">Time</label>
-              <select id="editTime" name="time24" required>
-                <option value="09:00">09:00</option>
-                <option value="10:00">10:00</option>
-                <option value="11:00">11:00</option>
-                <option value="14:00">14:00</option>
-                <option value="15:00">15:00</option>
-                <option value="16:00">16:00</option>
-                <option value="17:00">17:00</option>
-              </select>
+              <input type="time" id="editTime" name="time_24">
             </div>
             <div class="form-group">
               <label for="editEmail">Email</label>
@@ -442,8 +440,8 @@
           </div>
           
           <div class="action-buttons">
-            <button type="submit" id="updateBtn" class="action-button primary">Update Booking</button>
-            <button type="button" id="cancelBtn" class="action-button secondary">Cancel</button>
+            <button type="submit" class="action-button primary">Update Booking</button>
+            <a href="../index.html" class="action-button secondary">Cancel</a>
           </div>
         </form>
       </div>

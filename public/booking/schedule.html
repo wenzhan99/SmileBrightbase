@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Smile Bright Dental — Schedule Appointment</title>
+  
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <style>
@@ -284,6 +285,7 @@
     </style>
 </head>
 <body>
+  
 
   <!-- ===== HEADER ===== -->
   <nav class="nav">
@@ -693,51 +695,17 @@
             loadTimeSlots(selectedDate);
         }
 
-        async function loadTimeSlots(date) {
+        function loadTimeSlots(date) {
             const timeSlotsGrid = document.getElementById('timeSlotsGrid');
-      
-      try {
-        // Call API to get available time slots
-        const response = await fetch(`../../api/availability.php?dentist=${selectedDentist.id}&clinic=${selectedDentist.clinic_id}&date=${date}`);
-        const data = await response.json();
-        
-        if (data.success && data.slots.length > 0) {
-          timeSlotsGrid.innerHTML = '';
-          
-          data.slots.forEach(timeSlot => {
-            const slotElement = document.createElement('div');
-            slotElement.className = 'time-slot';
-            slotElement.textContent = timeSlot;
-            slotElement.onclick = () => selectTimeSlot(timeSlot, slotElement);
-            timeSlotsGrid.appendChild(slotElement);
-          });
-        } else {
-          // Fallback to default times if API is not available
-          const defaultTimes = ["09:00", "11:00", "14:00", "16:00"];
-          timeSlotsGrid.innerHTML = '';
-          
-          defaultTimes.forEach(timeSlot => {
-                    const slotElement = document.createElement('div');
-                    slotElement.className = 'time-slot';
-                    slotElement.textContent = timeSlot;
-                    slotElement.onclick = () => selectTimeSlot(timeSlot, slotElement);
-                    timeSlotsGrid.appendChild(slotElement);
-                });
-        }
-            } catch (error) {
-                console.error('Error loading time slots:', error);
-        // Fallback to default times
-        const defaultTimes = ["09:00", "11:00", "14:00", "16:00"];
-        timeSlotsGrid.innerHTML = '';
-        
-        defaultTimes.forEach(timeSlot => {
-          const slotElement = document.createElement('div');
-          slotElement.className = 'time-slot';
-          slotElement.textContent = timeSlot;
-          slotElement.onclick = () => selectTimeSlot(timeSlot, slotElement);
-          timeSlotsGrid.appendChild(slotElement);
-        });
-            }
+            const defaultTimes = ["09:00", "11:00", "14:00", "16:00"];
+            timeSlotsGrid.innerHTML = '';
+            defaultTimes.forEach(timeSlot => {
+              const slotElement = document.createElement('div');
+              slotElement.className = 'time-slot';
+              slotElement.textContent = timeSlot;
+              slotElement.onclick = () => selectTimeSlot(timeSlot, slotElement);
+              timeSlotsGrid.appendChild(slotElement);
+            });
         }
 
         function selectTimeSlot(time, element) {

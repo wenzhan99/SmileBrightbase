@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <title>Smile Bright Dental — Choose Your Dentist</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
 
     <style>
   :root{
@@ -212,6 +213,7 @@
     </style>
 </head>
 <body>
+  
 
   <!-- ===== HEADER ===== -->
   <nav class="nav">
@@ -282,55 +284,7 @@
     </div>
   </nav>
   
-  <script>
-    // Mobile menu toggle
-    function toggleMobileMenu() {
-      const navMenu = document.getElementById('navMenu');
-      navMenu.classList.toggle('active');
-    }
-    
-    // Dropdown toggle for mobile/touch devices
-    function toggleDropdown(event, element) {
-      // Only handle clicks on touch devices or when menu is in mobile mode
-      if (window.innerWidth <= 900 || 'ontouchstart' in window) {
-        event.preventDefault();
-        const navItem = element.parentElement;
-        const wasActive = navItem.classList.contains('active');
-        
-        // Close all other dropdowns
-        document.querySelectorAll('.nav-item.active').forEach(item => {
-          if (item !== navItem) {
-            item.classList.remove('active');
-            item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
-          }
-        });
-        
-        // Toggle current dropdown
-        navItem.classList.toggle('active');
-        element.setAttribute('aria-expanded', !wasActive);
-      }
-    }
-    
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function(event) {
-      if (!event.target.closest('.nav-item')) {
-        document.querySelectorAll('.nav-item.active').forEach(item => {
-          item.classList.remove('active');
-          item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
-        });
-      }
-    });
-    
-    // Keyboard navigation
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') {
-        document.querySelectorAll('.nav-item.active').forEach(item => {
-          item.classList.remove('active');
-          item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
-        });
-      }
-    });
-  </script>
+  
 
   <!-- ===== CONTENT ===== -->
   <div class="wrap">
@@ -340,14 +294,45 @@
         <p>Select a dentist to view available dates and times. Clinic is auto-assigned based on the dentist.</p>
       </div>
       <div class="card-body">
-
-        <div class="dentists-grid" id="dentistsGrid">
-            <!-- Dentists will be loaded here -->
+        <p style="margin-bottom:16px;color:var(--muted)">Choose a dentist below, then proceed to the booking form.</p>
+        <div class="dentists-grid">
+          <a class="dentist-card" href="schedule.html?dentist=dr-chua">
+            <div class="dentist-avatar">CW</div>
+            <div class="dentist-name">Dr. Chua Wen Zhan</div>
+            <div class="dentist-specialty">Principal Dentist</div>
+            <div class="clinic-info">Orchard Clinic</div>
+          </a>
+          <a class="dentist-card" href="schedule.html?dentist=dr-lau">
+            <div class="dentist-avatar">LG</div>
+            <div class="dentist-name">Dr. Lau Gwen</div>
+            <div class="dentist-specialty">Emergency Dentist</div>
+            <div class="clinic-info">Orchard Clinic</div>
+          </a>
+          <a class="dentist-card" href="schedule.html?dentist=dr-sarah">
+            <div class="dentist-avatar">ST</div>
+            <div class="dentist-name">Dr. Sarah Tan</div>
+            <div class="dentist-specialty">Cosmetic Dentist</div>
+            <div class="clinic-info">Marina Bay Clinic</div>
+          </a>
+          <a class="dentist-card" href="schedule.html?dentist=dr-james">
+            <div class="dentist-avatar">JL</div>
+            <div class="dentist-name">Dr. James Lim</div>
+            <div class="dentist-specialty">Orthodontist</div>
+            <div class="clinic-info">Bukit Timah Clinic</div>
+          </a>
+          <a class="dentist-card" href="schedule.html?dentist=dr-aisha">
+            <div class="dentist-avatar">AR</div>
+            <div class="dentist-name">Dr. Aisha Rahman</div>
+            <div class="dentist-specialty">Cosmetic Dentist</div>
+            <div class="clinic-info">Tampines Clinic</div>
+          </a>
+          <a class="dentist-card" href="schedule.html?dentist=dr-alex">
+            <div class="dentist-avatar">AL</div>
+            <div class="dentist-name">Dr. Alex Lee</div>
+            <div class="dentist-specialty">Pediatric Dentist</div>
+            <div class="clinic-info">Jurong Clinic</div>
+          </a>
         </div>
-
-        <button class="continue-button" id="continueButton" disabled onclick="continueToSchedule()">
-          Continue to Schedule
-        </button>
       </div>
     </div>
   </div>
@@ -402,112 +387,6 @@
     </div>
   </footer>
 
-    <script>
-        // Dentist data
-        const dentists = [
-            {
-                id: "dr-chua",
-                name: "Dr. Chua Wen Zhan",
-                specialty: "Principal Dentist",
-                clinic_id: "orchard-clinic",
-                clinic_name: "Orchard Clinic",
-                initials: "CW"
-            },
-            {
-                id: "dr-lau",
-                name: "Dr. Lau Gwen",
-                specialty: "Emergency Dentist",
-                clinic_id: "orchard-clinic",
-                clinic_name: "Orchard Clinic",
-                initials: "LG"
-            },
-            {
-                id: "dr-sarah",
-                name: "Dr. Sarah Tan",
-                specialty: "Cosmetic Dentist",
-                clinic_id: "marina-bay-clinic",
-                clinic_name: "Marina Bay Clinic",
-                initials: "ST"
-            },
-            {
-                id: "dr-james",
-                name: "Dr. James Lim",
-                specialty: "Orthodontist",
-                clinic_id: "bukit-timah-clinic",
-                clinic_name: "Bukit Timah Clinic",
-                initials: "JL"
-            },
-            {
-                id: "dr-aisha",
-                name: "Dr. Aisha Rahman",
-                specialty: "Cosmetic Dentist",
-                clinic_id: "tampines-clinic",
-                clinic_name: "Tampines Clinic",
-                initials: "AR"
-            },
-            {
-                id: "dr-alex",
-                name: "Dr. Alex Lee",
-                specialty: "Pediatric Dentist",
-                clinic_id: "jurong-clinic",
-                clinic_name: "Jurong Clinic",
-                initials: "AL"
-            }
-        ];
-
-    let selectedDentist = null;
-
-    // Initialize page
-    document.addEventListener('DOMContentLoaded', function() {
-      renderDentists();
-    });
-
-        function renderDentists() {
-            const grid = document.getElementById('dentistsGrid');
-      grid.innerHTML = '';
-            
-            dentists.forEach(dentist => {
-                const card = document.createElement('div');
-                card.className = 'dentist-card';
-                card.onclick = () => selectDentist(dentist);
-                
-                card.innerHTML = `
-          <div class="dentist-avatar">${dentist.initials}</div>
-                        <div class="dentist-name">${dentist.name}</div>
-                        <div class="dentist-specialty">${dentist.specialty}</div>
-          <div class="clinic-info">${dentist.clinic_name}</div>
-                `;
-                
-                grid.appendChild(card);
-            });
-        }
-
-    function selectDentist(dentist) {
-      // Remove previous selection
-      document.querySelectorAll('.dentist-card.selected').forEach(card => {
-        card.classList.remove('selected');
-      });
-
-      // Add selection
-      event.target.closest('.dentist-card').classList.add('selected');
-      selectedDentist = dentist;
-
-      // Enable continue button
-      document.getElementById('continueButton').disabled = false;
-    }
-
-    function continueToSchedule() {
-      if (selectedDentist) {
-        // Save dentist selection to localStorage
-        localStorage.setItem('chosenSchedule', JSON.stringify({
-          dentist: selectedDentist,
-          clinic: selectedDentist.clinic_id
-        }));
-
-        // Navigate to schedule page
-        window.location.href = `./schedule.html?dentist=${selectedDentist.id}`;
-      }
-    }
-    </script>
+  
 </body>
 </html>

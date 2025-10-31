@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Smile Bright Dental — Complete Your Booking</title>
+  
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../css/footer.css" />
   <style>
@@ -190,6 +191,7 @@
   </style>
 </head>
 <body>
+  
 
   <!-- ===== HEADER ===== -->
   <nav class="nav">
@@ -259,7 +261,7 @@
   <!-- ===== MAIN CONTENT ===== -->
   <div class="main-content">
     <div class="booking-container">
-      <a href="schedule.html" class="back-link">← Back to Schedule</a>
+      <a href="book_appointment.html" class="back-link">← Back</a>
       
       <div class="booking-header">
         <h1>Complete Your Booking</h1>
@@ -276,44 +278,28 @@
         <h3>Appointment Details</h3>
         <div class="selection-grid">
           <div class="selection-item">
-            <div class="selection-label">Dentist</div>
-            <div class="selection-value" id="selectedDentist">Loading...</div>
-          </div>
-          <div class="selection-item">
-            <div class="selection-label">Date</div>
-            <div class="selection-value" id="selectedDate">Loading...</div>
-          </div>
-          <div class="selection-item">
-            <div class="selection-label">Time</div>
-            <div class="selection-value" id="selectedTime">Loading...</div>
-          </div>
-          <div class="selection-item">
             <div class="selection-label">Clinic</div>
-            <div class="selection-value" id="selectedClinic">Loading...</div>
+            <div class="selection-value">Select below</div>
+          </div>
+          <div class="selection-item">
+            <div class="selection-label">Service</div>
+            <div class="selection-value">Select below</div>
           </div>
         </div>
       </div>
 
-      <form id="bookingForm">
-        <!-- Hidden fields for booking data -->
-        <input type="hidden" id="dentistId" name="dentistId" value="">
-        <input type="hidden" id="dentistName" name="dentistName" value="">
-        <input type="hidden" id="clinicId" name="clinicId" value="">
-        <input type="hidden" id="clinicName" name="clinicName" value="">
-        <input type="hidden" id="appointmentDate" name="appointmentDate" value="">
-        <input type="hidden" id="appointmentTime" name="appointmentTime" value="">
-
+      <form method="post" action="/SmileBrightbase/api/base_booking_submit.php">
         <!-- Personal Information Section -->
         <div class="form-section">
           <h3>Personal Information</h3>
           <div class="form-grid">
             <div class="form-group">
-              <label for="firstName">First Name *</label>
-              <input type="text" id="firstName" name="firstName" required>
+              <label for="first_name">First Name *</label>
+              <input type="text" id="first_name" name="first_name" required>
             </div>
             <div class="form-group">
-              <label for="lastName">Last Name *</label>
-              <input type="text" id="lastName" name="lastName" required>
+              <label for="last_name">Last Name *</label>
+              <input type="text" id="last_name" name="last_name" required>
             </div>
             <div class="form-group">
               <label for="email">Email Address *</label>
@@ -332,7 +318,7 @@
           <div class="form-grid">
             <div class="form-group">
               <label for="service">Service Required</label>
-              <select id="service" name="service">
+              <select id="service" name="service" required>
                 <option value="general">General Checkup</option>
                 <option value="cleaning">Teeth Cleaning</option>
                 <option value="filling">Dental Filling</option>
@@ -351,6 +337,24 @@
                 <option value="returning">Returning patient</option>
               </select>
             </div>
+            <div class="form-group">
+              <label for="clinic">Preferred Clinic</label>
+              <select id="clinic" name="clinic" required>
+                <option value="orchard">Orchard (Main)</option>
+                <option value="marina_bay">Marina Bay</option>
+                <option value="bukit_t">Bukit Timah</option>
+                <option value="tampines">Tampines</option>
+                <option value="jurong">Jurong</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="date_iso">Preferred Date</label>
+              <input type="date" id="date_iso" name="date_iso" required>
+            </div>
+            <div class="form-group">
+              <label for="time_24">Preferred Time</label>
+              <input type="time" id="time_24" name="time_24" required>
+            </div>
             <div class="form-group full-width">
               <label for="notes">Additional Notes</label>
               <textarea id="notes" name="notes" placeholder="Any specific concerns or requests..."></textarea>
@@ -361,232 +365,25 @@
         <!-- Consent Section -->
         <div class="form-section">
           <div class="checkbox-group">
-            <input type="checkbox" id="privacy" name="privacy" required>
+            <input type="checkbox" id="agree_policy" name="agree_policy" value="1" required>
             <label for="privacy">I agree to the privacy policy and consent to the collection and use of my personal information.</label>
           </div>
           <div class="checkbox-group">
-            <input type="checkbox" id="terms" name="terms" required>
+            <input type="checkbox" id="agree_terms" name="agree_terms" value="1" required>
             <label for="terms">I agree to the terms and conditions and understand the cancellation policy.</label>
           </div>
         </div>
 
         <div class="submit-section">
-          <button type="submit" class="submit-btn" id="submitBtn" disabled>Confirm Booking</button>
+          <button type="submit" class="submit-btn" id="submitBtn">Confirm Booking</button>
         </div>
       </form>
     </div>
   </div>
 
-  <script>
-    // Dentist to Clinic Mapping
-    const dentistClinicMapping = {
-      'Dr. Chua Wen Zhan': { clinic: 'Orchard Clinic', clinic_id: 'orchard-clinic' },
-      'Dr. Lau Gwen': { clinic: 'Orchard Clinic', clinic_id: 'orchard-clinic' },
-      'Dr. Sarah Tan': { clinic: 'Marina Bay Clinic', clinic_id: 'marina-bay-clinic' },
-      'Dr. James Lim': { clinic: 'Bukit Timah Clinic', clinic_id: 'bukit-timah-clinic' },
-      'Dr. Aisha Rahman': { clinic: 'Tampines Clinic', clinic_id: 'tampines-clinic' },
-      'Dr. Alex Lee': { clinic: 'Jurong Clinic', clinic_id: 'jurong-clinic' }
-    };
-
-    // Get URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    console.log('Booking form loaded');
-    console.log('URL parameters:', Object.fromEntries(urlParams.entries()));
-    
-    // Check if required parameters are present
-    const requiredParams = ['dentist', 'dentistName', 'date', 'time'];
-    const missingParams = requiredParams.filter(param => !urlParams.get(param));
-    
-    console.log('Required params:', requiredParams);
-    console.log('Missing params:', missingParams);
-    
-    if (missingParams.length > 0) {
-      // Show error message and redirect back to schedule
-      document.getElementById('errorMessage').style.display = 'block';
-      document.getElementById('errorText').textContent = `Missing: ${missingParams.join(', ')}. Please select your appointment details first.`;
-      
-      // Redirect back to schedule page after 3 seconds
-      setTimeout(() => {
-        window.location.href = 'schedule.html';
-      }, 3000);
-    } else {
-      // Populate the form with the selected data
-      const dentistId = urlParams.get('dentist');
-      const dentistName = urlParams.get('dentistName');
-      const date = urlParams.get('date');
-      const time = urlParams.get('time');
-      
-      // Auto-assign clinic based on dentist, with fallback to URL parameter
-      const clinicInfo = dentistClinicMapping[dentistName] || { 
-        clinic: urlParams.get('clinic') || 'Unknown', 
-        clinic_id: urlParams.get('clinic') || 'unknown' 
-      };
-      
-      // Update the summary display
-      document.getElementById('selectedDentist').textContent = dentistName;
-      document.getElementById('selectedDate').textContent = new Date(date).toLocaleDateString('en-US', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      });
-      document.getElementById('selectedTime').textContent = time;
-      document.getElementById('selectedClinic').textContent = clinicInfo.clinic;
-      
-      // Populate hidden form fields
-      document.getElementById('dentistId').value = dentistId;
-      document.getElementById('dentistName').value = dentistName;
-      document.getElementById('clinicId').value = clinicInfo.clinic_id;
-      document.getElementById('clinicName').value = clinicInfo.clinic;
-      document.getElementById('appointmentDate').value = date;
-      document.getElementById('appointmentTime').value = time;
-    }
-    
-    // Form validation and submit button state
-    function updateSubmitButton() {
-      const firstName = document.getElementById('firstName').value.trim();
-      const lastName = document.getElementById('lastName').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const privacy = document.getElementById('privacy').checked;
-      const terms = document.getElementById('terms').checked;
-      
-      const isValid = firstName && lastName && email && phone && privacy && terms;
-      document.getElementById('submitBtn').disabled = !isValid;
-    }
-    
-    // Add event listeners for form validation
-    document.getElementById('firstName').addEventListener('input', updateSubmitButton);
-    document.getElementById('lastName').addEventListener('input', updateSubmitButton);
-    document.getElementById('email').addEventListener('input', updateSubmitButton);
-    document.getElementById('phone').addEventListener('input', updateSubmitButton);
-    document.getElementById('privacy').addEventListener('change', updateSubmitButton);
-    document.getElementById('terms').addEventListener('change', updateSubmitButton);
-    
-    // Form submission handling
-    document.getElementById('bookingForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      // Disable submit button
-      const submitBtn = document.getElementById('submitBtn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Processing...';
-      
-      // Prepare form data
-      const formData = new FormData(this);
-      
-      // Convert form data to new API format
-      const bookingData = {
-        appointment: {
-          dentistId: formData.get('dentistId'),
-          dentistName: formData.get('dentistName'),
-          clinicId: formData.get('clinicId'),
-          clinicName: formData.get('clinicName'),
-          serviceCode: formData.get('service'),
-          serviceLabel: document.getElementById('service').selectedOptions[0].text,
-          experienceCode: formData.get('experience'),
-          experienceLabel: document.getElementById('experience').selectedOptions[0].text,
-          dateIso: formData.get('appointmentDate'),
-          time24: formData.get('appointmentTime')
-        },
-        patient: {
-          firstName: formData.get('firstName'),
-          lastName: formData.get('lastName'),
-          email: formData.get('email'),
-          phone: formData.get('phone'),
-          notes: formData.get('notes')
-        },
-        consent: {
-          agreePolicy: formData.get('privacy') === 'on',
-          agreeTerms: formData.get('terms') === 'on'
-        }
-      };
-      
-      // Submit to new API endpoint
-      fetch('/SmileBright/api/booking/create.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookingData)
-      })
-      .then(async response => {
-        const text = await response.text();
-        let data;
-        
-        try {
-          data = JSON.parse(text);
-        } catch (e) {
-          console.error('Non-JSON response:', text);
-          alert(`Booking failed (non-JSON, status ${response.status}). First 200 chars:\n` + text.slice(0, 200));
-          throw e;
-        }
-        
-        if (data.ok) {
-          // Store booking data in localStorage for success page
-          localStorage.setItem('lastBooking', JSON.stringify({
-            referenceId: data.referenceId,
-            bookingId: data.bookingId,
-            dentistName: bookingData.appointment.dentistName,
-            clinicName: bookingData.appointment.clinicName,
-            serviceLabel: bookingData.appointment.serviceLabel,
-            dateIso: bookingData.appointment.dateIso,
-            time24: bookingData.appointment.time24
-          }));
-          
-          // Navigate to success page using redirectUrl
-          window.location.href = data.redirectUrl;
-        } else {
-          throw new Error(data.error || data.message || 'Booking failed');
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Booking failed: ' + error.message);
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Confirm Booking';
-      });
-    });
-    
-    // Mobile menu toggle
-    function toggleMobileMenu() {
-      const navMenu = document.getElementById('navMenu');
-      navMenu.classList.toggle('active');
-    }
-    
-    // Dropdown toggle for mobile/touch devices
-    function toggleDropdown(event, element) {
-      if (window.innerWidth <= 900 || 'ontouchstart' in window) {
-        event.preventDefault();
-        const navItem = element.parentElement;
-        const wasActive = navItem.classList.contains('active');
-        
-        document.querySelectorAll('.nav-item.active').forEach(item => {
-          if (item !== navItem) {
-            item.classList.remove('active');
-            item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
-          }
-        });
-        
-        navItem.classList.toggle('active');
-        element.setAttribute('aria-expanded', !wasActive);
-      }
-    }
-    
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function(event) {
-      if (!event.target.closest('.nav-item')) {
-        document.querySelectorAll('.nav-item.active').forEach(item => {
-          item.classList.remove('active');
-          item.querySelector('.nav-link')?.setAttribute('aria-expanded', 'false');
-        });
-      }
-    });
-    
-  </script>
+  
   
   <div id="site-footer"></div>
-  <script src="../js/footer.js"></script>
+  
 </body>
 </html>

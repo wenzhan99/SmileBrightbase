@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Smile Bright Dental — Book Appointment</title>
+  
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <style>
@@ -248,11 +249,12 @@
 </style>
 </head>
 <body>
+  
 
   <!-- ===== HEADER ===== -->
   <nav class="nav">
     <div class="nav-inner">
-      <a href="index.html" class="brand">Smile Bright Dental</a>
+      <a href="../index.html" class="brand">Smile Bright Dental</a>
       
       <button class="menu-toggle" aria-label="Toggle navigation menu" onclick="toggleMobileMenu()">
         ☰
@@ -260,49 +262,49 @@
       
       <div class="navlinks" id="navMenu">
         <div class="nav-item">
-          <a href="index.html" class="nav-link">Home</a>
+          <a href="../index.html" class="nav-link">Home</a>
         </div>
         
         <div class="nav-item">
-          <a href="aboutus.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+          <a href="../about_us.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
             About Us
           </a>
           <div class="dropdown" role="menu">
-            <a href="aboutus.html#team" role="menuitem">Our Team</a>
-            <a href="aboutus.html#mission" role="menuitem">Mission & Values</a>
-            <a href="aboutus.html#careers" role="menuitem">Careers</a>
-            <a href="aboutus.html#contact" role="menuitem">Contact Us</a>
+            <a href="../about_us.html#team" role="menuitem">Our Team</a>
+            <a href="../about_us.html#mission" role="menuitem">Mission & Values</a>
+            <a href="../about_us.html#careers" role="menuitem">Careers</a>
+            <a href="../about_us.html#contact" role="menuitem">Contact Us</a>
           </div>
         </div>
         
         <div class="nav-item">
-          <a href="services.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+          <a href="../services.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
             Services
           </a>
           <div class="dropdown" role="menu">
-            <a href="services.html#general" role="menuitem">General Dentistry</a>
-            <a href="services.html#scaling" role="menuitem">Scaling & Polishing</a>
-            <a href="services.html#braces" role="menuitem">Braces & Invisalign</a>
-            <a href="services.html#whitening" role="menuitem">Teeth Whitening</a>
-            <a href="services.html#implants" role="menuitem">Dental Implants</a>
-            <a href="services.html#wisdom" role="menuitem">Wisdom Tooth Surgery</a>
+            <a href="../services.html#general" role="menuitem">General Dentistry</a>
+            <a href="../services.html#scaling" role="menuitem">Scaling & Polishing</a>
+            <a href="../services.html#braces" role="menuitem">Braces & Invisalign</a>
+            <a href="../services.html#whitening" role="menuitem">Teeth Whitening</a>
+            <a href="../services.html#implants" role="menuitem">Dental Implants</a>
+            <a href="../services.html#wisdom" role="menuitem">Wisdom Tooth Surgery</a>
           </div>
         </div>
         
         <div class="nav-item">
-          <a href="clinics.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
+          <a href="../clinics.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
             Clinics
           </a>
           <div class="dropdown" role="menu">
-            <a href="clinics.html#locations" role="menuitem">Locations</a>
-            <a href="clinics.html#hours" role="menuitem">Opening Hours</a>
-            <a href="clinics.html#insurance" role="menuitem">Insurance & CHAS</a>
-            <a href="Book-Appointment.html" role="menuitem">Book Appointment</a>
+            <a href="../clinics.html#locations" role="menuitem">Locations</a>
+            <a href="../clinics.html#hours" role="menuitem">Opening Hours</a>
+            <a href="../clinics.html#insurance" role="menuitem">Insurance & CHAS</a>
+            <a href="../book_appointment.html" role="menuitem">Book Appointment</a>
           </div>
         </div>
         
         <div class="nav-item">
-          <a href="FAQ.html" class="nav-link has-dropdown" aria-expanded="false">FAQ</a>
+          <a href="../faq.html" class="nav-link has-dropdown" aria-expanded="false">FAQ</a>
           <div class="dropdown" role="menu">
             <a href="FAQ.html#pricing-longevity" role="menuitem">Pricing & Longevity</a>
             <a href="FAQ.html#processes-procedures" role="menuitem">Processes & Procedures</a>
@@ -312,7 +314,7 @@
         </div>
         
         <div class="nav-cta">
-          <a href="Book-Appointment.html"><button class="btn" aria-current="page">Book Appointment</button></a>
+          <a href="../book_appointment.html"><button class="btn" aria-current="page">Book Appointment</button></a>
         </div>
       </div>
     </div>
@@ -417,7 +419,7 @@
           return;
         }
         
-        let url = `/SmileBright/public/booking/manage_booking.html?ref=${encodeURIComponent(ref)}`;
+        let url = `/SmileBrightbase/public/booking/manage_booking.html?ref=${encodeURIComponent(ref)}`;
         if (email) {
           url += `&email=${encodeURIComponent(email)}`;
         }
@@ -457,9 +459,7 @@
           <p style="font-size: 1.1rem; color: var(--muted); margin-bottom: 30px;">
             Start your appointment booking process by selecting your preferred dentist.
           </p>
-          <a href="./public/dentists.html" class="btn" style="font-size: 1.2rem; padding: 15px 30px;">
-            Choose Your Dentist
-          </a>
+          <a href="dentists.html" class="btn" style="font-size: 1.2rem; padding: 15px 30px;">Choose Your Dentist</a>
         </div>
       </div>
     </div>
@@ -483,7 +483,7 @@
             <input type="email" id="abEmail" placeholder="your.email@example.com">
           </div>
           <div class="ab-actions">
-            <button type="button" id="abGo" class="btn ab-btn" disabled>Enter Reference ID</button>
+            <a href="manage_booking.html" id="abGo" class="btn ab-btn">Go to Manage</a>
           </div>
         </div>
       </div>
@@ -503,12 +503,12 @@
       <div class="footer-section">
         <h3>Quick Links</h3>
         <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="aboutus.html">About Us</a></li>
-          <li><a href="services.html">Services</a></li>
-          <li><a href="clinics.html">Clinics</a></li>
-          <li><a href="FAQ.html">FAQ</a></li>
-          <li><a href="Book-Appointment.html">Book Appointment</a></li>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../about_us.html">About Us</a></li>
+          <li><a href="../services.html">Services</a></li>
+          <li><a href="../clinics.html">Clinics</a></li>
+          <li><a href="../faq.html">FAQ</a></li>
+          <li><a href="../book_appointment.html">Book Appointment</a></li>
         </ul>
       </div>
 
