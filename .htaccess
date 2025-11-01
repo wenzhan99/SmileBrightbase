@@ -1,13 +1,21 @@
 RewriteEngine On
 
-# Allow API access
-RewriteCond %{REQUEST_URI} ^/SmileBright/api/
+# Allow API access (works for both /SmileBrightbase/api/ and direct access)
+RewriteCond %{REQUEST_URI} ^.*/api/
 RewriteRule ^(.*)$ - [L]
 
-# Redirect all other requests to the public directory
-RewriteCond %{REQUEST_URI} !^/public/
-RewriteRule ^(.*)$ /public/$1 [L]
+# Allow direct access to public folder
+RewriteCond %{REQUEST_URI} ^.*/public/
+RewriteRule ^(.*)$ - [L]
 
-# Optional: Redirect root to public/index.html
-RewriteCond %{REQUEST_URI} ^/SmileBright/?$
-RewriteRule ^(.*)$ /SmileBright/public/index.html [L]
+# Redirect root requests to public/index.html
+RewriteCond %{REQUEST_URI} ^.*/?$
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^$ public/index.html [L]
+
+# Redirect all other requests to the public directory (if file doesn't exist in root)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^.*/public/
+RewriteRule ^(.*)$ public/$1 [L]

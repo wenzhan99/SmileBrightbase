@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/config.php';
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
@@ -86,9 +88,6 @@ $emailData = [
     'service' => $service
 ];
 
-// Include database connection
-include_once '../src/config/database.php';
-
 // Save booking to database
 try {
     $tokenExpiresAt = date('Y-m-d H:i:s', strtotime('+7 days')); // 7 days from now
@@ -141,62 +140,37 @@ try {
     exit();
 }
 
-// Send confirmation email via Node.js email service
+// Send confirmation email using PHP mail() function (Base Version - No AJAX/JSON)
 $emailSent = false;
 try {
-    // Prepare email data for Node.js service
-    $emailData = [
-        'referenceId' => $bookingRef,
-        'patient' => [
-            'firstName' => $patient['first_name'],
-            'lastName' => $patient['last_name'],
-            'email' => $patient['email'],
-            'phone' => $patient['phone']
-        ],
-        'appointment' => [
-            'dentistId' => $dentistId,
-            'dentistName' => $dentistName,
-            'clinicId' => $clinicId,
-            'clinicName' => $clinicName,
-            'serviceCode' => $service,
-            'serviceLabel' => ucfirst(str_replace('_', ' ', $service)),
-            'experienceCode' => $previousExperience,
-            'experienceLabel' => ucfirst(str_replace('_', ' ', $previousExperience)),
-            'dateIso' => $dateIso,
-            'time24' => $timeHuman,
-            'dateDisplay' => $dateHuman,
-            'timeDisplay' => $timeHuman
-        ],
-        'notes' => $notes,
-        'consent' => [
-            'agreePolicy' => true,
-            'agreeTerms' => true
-        ]
+    // Include email service function
+    require_once __DIR__ . '/../src/services/send_email.php';
+    
+    // Prepare appointment data for email
+    $appointmentData = [
+        'email' => $patient['email'],
+        'first_name' => $patient['first_name'],
+        'last_name' => $patient['last_name'],
+        'phone' => $patient['phone'],
+        'date' => $dateIso,
+        'time' => $timeHuman,
+        'clinic' => $clinicName,
+        'service' => ucfirst(str_replace('_', ' ', $service)),
+        'experience' => ucfirst(str_replace('_', ' ', $previousExperience)),
+        'message' => $notes,
+        'id' => $bookingId,
+        'reschedule_token' => $manageToken,
+        'created_at' => date('Y-m-d H:i:s'),
+        'token_expires_at' => date('Y-m-d H:i:s', strtotime('+30 days'))
     ];
     
-    // Call Node.js email service
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, 'http://localhost:4001/send-booking-emails');
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($emailData));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json',
-        'X-Email-Token: sb_email_token_use_this_exact_string'
-    ]);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+    // Send email using PHP mail() function
+    $emailSent = sendBookingConfirmation($appointmentData);
     
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curlError = curl_error($ch);
-    curl_close($ch);
-    
-    if ($httpCode === 200 && !$curlError) {
-        $emailSent = true;
-        error_log('Email service: Successfully sent confirmation emails for booking ' . $bookingRef);
+    if ($emailSent) {
+        error_log('Email sent successfully for booking ' . $bookingRef);
     } else {
-        error_log('Email service failed: HTTP ' . $httpCode . ', Error: ' . $curlError . ', Response: ' . $response);
+        error_log('Email sending failed for booking ' . $bookingRef);
     }
     
 } catch (Exception $e) {
@@ -204,20 +178,7 @@ try {
     error_log('Email sending failed: ' . $e->getMessage());
 }
 
-// Return success response
-echo json_encode([
-    'ok' => true,
-    'message' => 'Booking created successfully',
-    'booking_id' => $bookingId,
-    'booking_ref' => $bookingRef,
-    'manage_token' => $manageToken,
-    'dentist_name' => $dentistName,
-    'clinic_name' => $clinicName,
-    'date_human' => $dateHuman,
-    'time_human' => $timeHuman,
-    'service' => ucfirst(str_replace('_', ' ', $service)),
-    'manage_url' => '/booking/manage?token=' . $manageToken,
-    'email_status' => $emailSent ? 'sent' : 'queued',
-    'redirectUrl' => '/SmileBright/public/booking/booking_success.html?bookingId=' . $bookingRef
-]);
+// Return success response (HTML redirect for base version - no JSON)
+header('Location: /SmileBrightbase/public/booking/booking_success.php?ref=' . urlencode($bookingRef));
+exit();
 ?>

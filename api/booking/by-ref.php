@@ -2,6 +2,8 @@
 // SmileBright Booking API - Get Booking by Reference
 // /api/booking/by-ref.php
 
+require_once __DIR__ . '/../config.php';
+
 // Set JSON response headers immediately
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -29,6 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit();
 }
 
+// Check database connection
+if ($mysqli->connect_errno) {
+    echo json_encode(['ok' => false, 'error' => 'Database connection failed']);
+    exit();
+}
+
 // Initialize response
 $response = ['ok' => false, 'error' => 'Unknown error'];
 
@@ -38,18 +46,6 @@ try {
     
     if (!$referenceId) {
         echo json_encode(['ok' => false, 'error' => 'Missing reference ID']);
-        exit();
-    }
-
-    // Database connection
-    try {
-        $mysqli = new mysqli('127.0.0.1', 'root', '', 'smilebright', 3306);
-        if ($mysqli->connect_errno) {
-            throw new Exception('Database connection failed: ' . $mysqli->connect_error);
-        }
-        $mysqli->set_charset('utf8mb4');
-    } catch (Exception $e) {
-        echo json_encode(['ok' => false, 'error' => 'Database connection failed']);
         exit();
     }
 
@@ -77,7 +73,6 @@ try {
     $result = $stmt->get_result();
     $booking = $result->fetch_assoc();
     $stmt->close();
-    $mysqli->close();
     
     if (!$booking) {
         echo json_encode(['ok' => false, 'error' => 'Booking not found']);

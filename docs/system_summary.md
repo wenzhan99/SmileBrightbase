@@ -37,12 +37,12 @@ Patient submits form → Data saved → Email sent automatically → Patient rec
    ┌──────────────────────┐
    │ Book-Appointment.html│
    │  - Form display      │
-   │  - React component   │
+   │  - HTML/CSS/JS       │
    └──────────┬───────────┘
               │
               ↓
    ┌──────────────────────┐
-   │  bookingForm.jsx     │
+   │  HTML Form           │
    │  - Form validation   │
    │  - POST to showpost  │
    └──────────┬───────────┘
@@ -150,7 +150,7 @@ define('WEBSITE_URL', 'http://localhost/SmileBright');   // ← Change
 
 **Option B: Production SMTP**
 - Use SendGrid, Mailgun, or Amazon SES
-- See `EMAIL_SETUP_GUIDE.md` for details
+- Configure via PHP email service configuration
 
 ### Step 3: Test It (5 min)
 
@@ -287,7 +287,7 @@ SmileBright/
 │
 ├── Frontend (Patient-facing)
 │   ├── Book-Appointment.html       ← Booking page
-│   └── bookingForm.jsx             ← React form component
+│   └── Standard HTML form          ← Form submission
 │
 ├── Backend (Processing)
 │   ├── showpost.php                ← Form handler + email trigger
@@ -300,7 +300,6 @@ SmileBright/
 │   └── migration_add_reschedule_tokens.sql  ← Update script
 │
 ├── Documentation
-│   ├── EMAIL_SETUP_GUIDE.md        ← Detailed setup guide
 │   ├── QUICK_START.md              ← Quick reference
 │   └── SYSTEM_SUMMARY.md           ← This file
 │
@@ -331,7 +330,7 @@ Step 2: Patient fills form:
                               ↓
 Step 3: Patient clicks "SUBMIT"
                               ↓
-Step 4: JavaScript validation (bookingForm.jsx)
+Step 4: Form validation (client-side JavaScript)
         ✓ Name: letters only
         ✓ Email: valid format
         ✓ Phone: 8-15 digits
@@ -399,7 +398,7 @@ TOTAL TIME: < 2 seconds from submit to email received
        │ Submits form data
        ↓
 ┌─────────────────┐
-│ bookingForm.jsx │  Validates + formats data
+│ HTML Form       │  Validates + formats data
 └──────┬──────────┘
        │ POST /showpost.php
        ↓
@@ -537,7 +536,7 @@ Your original requirements vs. implementation:
 
 *Your email confirmation system is complete and ready to use!* 🎉
 
-*Need help? Check QUICK_START.md or EMAIL_SETUP_GUIDE.md*
+*Need help? Check QUICK_START.md*
 
 
 

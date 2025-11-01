@@ -4,8 +4,8 @@
  * Uses PHPMailer with Gmail SMTP for secure email delivery
  */
 
-require_once 'vendor/autoload.php';
-require_once 'email_config_secure.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../config/email.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -24,16 +24,17 @@ class SmileBrightEmailService {
      * Load email configuration from secure config file
      */
     private function loadEmailConfig() {
+        // Use constants from email.php config, with safe defaults
         return [
-            'smtp_host' => SMTP_HOST,
-            'smtp_port' => SMTP_PORT,
-            'smtp_secure' => SMTP_SECURE,
-            'smtp_user' => SMTP_USER,
-            'smtp_pass' => SMTP_PASS,
-            'from_email' => EMAIL_FROM,
-            'from_name' => EMAIL_FROM_NAME,
-            'reply_to' => EMAIL_REPLY_TO,
-            'bcc_admin' => EMAIL_BCC_ADMIN
+            'smtp_host' => defined('SMTP_HOST') ? SMTP_HOST : 'smtp.gmail.com',
+            'smtp_port' => defined('SMTP_PORT') ? SMTP_PORT : 465,
+            'smtp_secure' => defined('SMTP_SECURE') ? SMTP_SECURE : true,
+            'smtp_user' => defined('SMTP_USER') ? SMTP_USER : (defined('EMAIL_FROM') ? EMAIL_FROM : ''),
+            'smtp_pass' => defined('SMTP_PASS') ? SMTP_PASS : '',
+            'from_email' => defined('EMAIL_FROM') ? EMAIL_FROM : 'smilebright.info@gmail.com',
+            'from_name' => defined('EMAIL_FROM_NAME') ? EMAIL_FROM_NAME : 'Smile Bright Dental',
+            'reply_to' => defined('EMAIL_REPLY_TO') ? EMAIL_REPLY_TO : (defined('EMAIL_FROM') ? EMAIL_FROM : ''),
+            'bcc_admin' => defined('EMAIL_BCC_ADMIN') ? EMAIL_BCC_ADMIN : ''
         ];
     }
     
@@ -50,8 +51,15 @@ class SmileBrightEmailService {
             $this->mailer->SMTPAuth = true;
             $this->mailer->Username = $this->config['smtp_user'];
             $this->mailer->Password = $this->config['smtp_pass'];
-            $this->mailer->SMTPSecure = $this->config['smtp_secure'] ? 
-                PHPMailer::ENCRYPTION_SMTPS : PHPMailer::ENCRYPTION_STARTTLS;
+            // Configure encryption based on port (Gmail requires specific settings)
+            // Port 587 = STARTTLS, Port 465 = SSL/SMTPS
+            if ($this->config['smtp_port'] == 465) {
+                // Port 465 requires SSL (SMTPS)
+                $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            } else {
+                // Port 587 uses STARTTLS (this is what we're using)
+                $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            }
             $this->mailer->Port = $this->config['smtp_port'];
             
             // Development SSL override (for localhost testing)
@@ -96,8 +104,8 @@ class SmileBrightEmailService {
                 $this->mailer->addBCC($this->config['bcc_admin']);
             }
             
-            // Set subject
-            $this->mailer->Subject = "✅ Your SmileBright booking — Ref {$bookingData['reference_id']}";
+            // Set subject (no emojis for better email client compatibility)
+            $this->mailer->Subject = "Your SmileBright Booking Confirmation - Ref {$bookingData['reference_id']}";
             
             // Generate email content
             $htmlContent = $this->generateBookingConfirmationHTML($bookingData);
@@ -122,10 +130,15 @@ class SmileBrightEmailService {
             }
             
         } catch (Exception $e) {
-            error_log("Booking confirmation email failed: " . $e->getMessage());
+            $errorMessage = $e->getMessage();
+            $errorInfo = $this->mailer->ErrorInfo ?? 'No additional error info';
+            error_log("❌ Booking confirmation email failed to {$bookingData['email']}: {$errorMessage}");
+            error_log("   PHPMailer ErrorInfo: {$errorInfo}");
+            error_log("   SMTP Config - Host: {$this->config['smtp_host']}, Port: {$this->config['smtp_port']}, User: {$this->config['smtp_user']}");
             return [
                 'success' => false,
-                'message' => $e->getMessage(),
+                'message' => $errorMessage,
+                'error_info' => $errorInfo,
                 'to' => $bookingData['email'] ?? 'unknown'
             ];
         }
@@ -145,7 +158,7 @@ class SmileBrightEmailService {
                 $this->mailer->addBCC($this->config['bcc_admin']);
             }
             
-            $this->mailer->Subject = "📅 Appointment adjusted — Ref {$bookingData['reference_id']}";
+            $this->mailer->Subject = "Appointment Adjusted - Ref {$bookingData['reference_id']}";
             
             $htmlContent = $this->generateClinicAdjustmentHTML($bookingData, $oldData);
             $textContent = $this->generateClinicAdjustmentText($bookingData, $oldData);
@@ -191,7 +204,7 @@ class SmileBrightEmailService {
                 $this->mailer->addBCC($this->config['bcc_admin']);
             }
             
-            $this->mailer->Subject = "✅ Rescheduled confirmed — Ref {$bookingData['reference_id']}";
+            $this->mailer->Subject = "Reschedule Confirmed - Ref {$bookingData['reference_id']}";
             
             $htmlContent = $this->generateRescheduleConfirmationHTML($bookingData);
             $textContent = $this->generateRescheduleConfirmationText($bookingData);
@@ -234,7 +247,7 @@ class SmileBrightEmailService {
             $this->mailer->clearAttachments();
             
             $this->mailer->addAddress($testEmail);
-            $this->mailer->Subject = "🔐 Gmail Configuration Test - SmileBright";
+            $this->mailer->Subject = "Gmail Configuration Test - SmileBright";
             
             $htmlContent = $this->generateTestEmailHTML();
             $textContent = $this->generateTestEmailText();
@@ -274,6 +287,7 @@ class SmileBrightEmailService {
         $formattedTime = formatEmailTime($bookingData['preferred_time']);
         $viewUrl = "confirm.php?ref={$bookingData['reference_id']}&token={$bookingData['reschedule_token']}";
         $cancelUrl = "cancel.php?ref={$bookingData['reference_id']}&token={$bookingData['reschedule_token']}";
+        $doctorName = isset($bookingData['doctor_name']) && !empty($bookingData['doctor_name']) ? htmlspecialchars($bookingData['doctor_name']) : 'Not specified';
         
         return "
         <!DOCTYPE html>
@@ -318,6 +332,14 @@ class SmileBrightEmailService {
                             <div class='detail-content'>
                                 <div class='detail-label'>When</div>
                                 <div class='detail-value'>{$formattedDate} at {$formattedTime}</div>
+                            </div>
+                        </div>
+                        
+                        <div class='detail-row'>
+                            <div class='detail-icon'>👨‍⚕️</div>
+                            <div class='detail-content'>
+                                <div class='detail-label'>Dentist</div>
+                                <div class='detail-value'>{$doctorName}</div>
                             </div>
                         </div>
                         
@@ -375,7 +397,8 @@ class SmileBrightEmailService {
         $formattedTime = formatEmailTime($bookingData['preferred_time']);
         $viewUrl = "confirm.php?ref={$bookingData['reference_id']}&token={$bookingData['reschedule_token']}";
         
-        return "YOUR APPOINTMENT IS BOOKED ✅\n\nHi {$bookingData['full_name']},\n\nWe've confirmed your appointment. Here are the details:\n\n📅 When: {$formattedDate} at {$formattedTime}\n🏥 Clinic: {$clinicInfo['name']}\n   {$clinicInfo['address']}\n🦷 Service: {$bookingData['service']}\n📞 Reference ID: {$bookingData['reference_id']}\n\nNeed to change your appointment?\nReschedule: {$viewUrl}\n\n---\nAppointment ID: #{$bookingData['id']} • Created " . date('M j, Y \a\t g:i A') . "\n— SmileBright Dental\nYour trusted dental care provider in Singapore";
+        $doctorName = !empty($bookingData['doctor_name']) ? $bookingData['doctor_name'] : 'Not specified';
+        return "YOUR APPOINTMENT IS BOOKED ✅\n\nHi {$bookingData['full_name']},\n\nWe've confirmed your appointment. Here are the details:\n\n📅 When: {$formattedDate} at {$formattedTime}\n👨‍⚕️ Dentist: {$doctorName}\n🏥 Clinic: {$clinicInfo['name']}\n   {$clinicInfo['address']}\n🦷 Service: {$bookingData['service']}\n📞 Reference ID: {$bookingData['reference_id']}\n\nNeed to change your appointment?\nReschedule: {$viewUrl}\n\n---\nAppointment ID: #{$bookingData['id']} • Created " . date('M j, Y \a\t g:i A') . "\n— SmileBright Dental\nYour trusted dental care provider in Singapore";
     }
     
     /**

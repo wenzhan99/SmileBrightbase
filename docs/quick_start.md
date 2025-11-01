@@ -146,7 +146,7 @@ Patient fills form
        ↓
 Clicks "SUBMIT"
        ↓
-bookingForm.jsx → POST to showpost.php
+HTML Form → POST to showpost.php
        ↓
 showpost.php:
   1. Validates data
@@ -168,7 +168,7 @@ Patient receives email ✅
 | File | Purpose |
 |------|---------|
 | `Book-Appointment.html` | Booking page |
-| `bookingForm.jsx` | React form component |
+| HTML Form | Standard form submission |
 | `showpost.php` | Form handler, saves to DB |
 | `send_email.php` | Email sending logic |
 | `email_config.php` | All email settings |
@@ -341,7 +341,7 @@ Before going live:
 If you encounter issues:
 
 1. Check this guide's troubleshooting section
-2. Review `EMAIL_SETUP_GUIDE.md` for detailed setup
+2. Review PHP email configuration files for detailed setup
 3. Check PHP error logs
 4. Test email configuration separately
 5. Verify database schema

@@ -1,5 +1,5 @@
 <?php
-$mysqli = new mysqli('127.0.0.1', 'root', '', 'smilebright', 3306);
+$mysqli = new mysqli('127.0.0.1', 'root', '', 'smilebrightbase', 3306);
 if ($mysqli->connect_errno) {
   http_response_code(500);
   header('Content-Type: application/json');

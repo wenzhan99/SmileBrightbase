@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <title>Smile Bright Dental — Manage Your Booking</title>
-  
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../css/footer.css" />
   <style>
     :root{
       --primary:#1e4b86; --primary-600:#173b6a;
@@ -70,7 +70,7 @@
     }
     .btn:hover{background:#173b6a}
     .btn:disabled{background:#6c757d;cursor:not-allowed}
-
+    
     /* Main Content */
     .main-content{
       padding:40px 20px;max-width:900px;margin:0 auto;
@@ -205,17 +205,6 @@
       background:#6c757d;cursor:not-allowed;opacity:0.6;
     }
     
-    /* Loading States */
-    .loading{
-      opacity:0.6;pointer-events:none;
-    }
-    .spinner{
-      display:inline-block;width:20px;height:20px;border:2px solid #f3f3f3;
-      border-top:2px solid var(--primary);border-radius:50%;
-      animation:spin 1s linear infinite;margin-right:10px;
-    }
-    @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-    
     /* Error Messages */
     .error-message{
       background:#fee;color:#c33;padding:15px;border-radius:8px;
@@ -239,7 +228,6 @@
   </style>
 </head>
 <body>
-  
 
   <!-- ===== HEADER ===== -->
   <nav class="nav">
@@ -252,7 +240,7 @@
         </div>
         
         <div class="nav-item">
-          <a href="../about_us.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false">
+          <a href="../about_us.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
             About Us
           </a>
           <div class="dropdown" role="menu">
@@ -264,7 +252,7 @@
         </div>
         
         <div class="nav-item">
-          <a href="../services.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false">
+          <a href="../services.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
             Services
           </a>
           <div class="dropdown" role="menu">
@@ -278,29 +266,29 @@
         </div>
         
         <div class="nav-item">
-          <a href="../clinics.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false">
+          <a href="../clinics.html" class="nav-link has-dropdown" aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event, this)">
             Clinics
           </a>
           <div class="dropdown" role="menu">
             <a href="../clinics.html#locations" role="menuitem">Locations</a>
             <a href="../clinics.html#hours" role="menuitem">Opening Hours</a>
             <a href="../clinics.html#insurance" role="menuitem">Insurance & CHAS</a>
-            <a href="../book_appointment.html" role="menuitem">Book Appointment</a>
+            <a href="../book_appointmentbase.html" role="menuitem">Book Appointment</a>
           </div>
         </div>
         
         <div class="nav-item">
-          <a href="../FAQ.html" class="nav-link has-dropdown" aria-expanded="false">FAQ</a>
+          <a href="../faq.html" class="nav-link has-dropdown" aria-expanded="false" onclick="toggleDropdown(event, this)">FAQ</a>
           <div class="dropdown" role="menu">
-            <a href="../FAQ.html#pricing-longevity" role="menuitem">Pricing & Longevity</a>
-            <a href="../FAQ.html#processes-procedures" role="menuitem">Processes & Procedures</a>
-            <a href="../FAQ.html#patient-transfers" role="menuitem">Patient Transfers</a>
-            <a href="../FAQ.html#chas-dental-subsidies" role="menuitem">CHAS Dental Subsidies</a>
+            <a href="../faq.html#pricing-longevity" role="menuitem">Pricing & Longevity</a>
+            <a href="../faq.html#processes-procedures" role="menuitem">Processes & Procedures</a>
+            <a href="../faq.html#patient-transfers" role="menuitem">Patient Transfers</a>
+            <a href="../faq.html#chas-dental-subsidies" role="menuitem">CHAS Dental Subsidies</a>
           </div>
         </div>
         
         <div class="nav-item">
-          <a href="../book_appointment.html"><button class="btn" aria-current="page">Book Appointment</button></a>
+          <a href="../book_appointmentbase.html"><button class="btn" aria-current="page">Book Appointment</button></a>
         </div>
       </div>
     </div>
@@ -309,10 +297,11 @@
   <!-- ===== MAIN CONTENT ===== -->
   <div class="main-content">
     <div class="booking-container">
+      
       <!-- Header Band -->
       <div class="header-band">
         <h1>Manage Your Booking</h1>
-        <a href="book_appointment.html" class="breadcrumb">← Back</a>
+        <a href="../book_appointmentbase.html" class="breadcrumb">← Book New Appointment</a>
       </div>
 
       <!-- Status Banner -->
@@ -325,544 +314,92 @@
         <strong>Error:</strong> <span id="errorText"></span>
       </div>
 
-      <!-- Verification Section -->
+      <!-- Verification Section - Uses PHP form submission -->
       <div class="verification-section">
         <h3>Verify Your Booking</h3>
-        <div class="verification-form">
-          <div class="form-group">
-            <label for="referenceId">Reference ID *</label>
-            <input type="text" id="referenceId" name="referenceId" required placeholder="SB-20250101-XXXX">
-          </div>
-          <div class="form-group">
-            <label for="email">Email (Optional)</label>
-            <input type="email" id="email" name="email" placeholder="your.email@example.com">
-          </div>
-          <div class="form-group">
-            <button type="button" id="loadBookingBtn" class="btn">Load Booking</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Current Booking Display -->
-      <div id="currentBooking" class="current-booking" style="display: none;">
-        <h3>Current Booking Details</h3>
-        <div class="booking-grid">
-          <div class="booking-item">
-            <div class="booking-label">Reference ID</div>
-            <div class="booking-value" id="displayReferenceId">-</div>
-          </div>
-          <div class="booking-item">
-            <div class="booking-label">Status</div>
-            <div class="booking-value" id="displayStatus">-</div>
-          </div>
-          <div class="booking-item">
-            <div class="booking-label">Dentist</div>
-            <div class="booking-value" id="displayDentist">-</div>
-          </div>
-          <div class="booking-item">
-            <div class="booking-label">Clinic</div>
-            <div class="booking-value" id="displayClinic">-</div>
-          </div>
-          <div class="booking-item">
-            <div class="booking-label">Date</div>
-            <div class="booking-value" id="displayDate">-</div>
-          </div>
-          <div class="booking-item">
-            <div class="booking-label">Time</div>
-            <div class="booking-value" id="displayTime">-</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Edit Form -->
-      <div id="editForm" class="edit-section" style="display: block;">
-        <h3>Update Booking Details</h3>
-        <form method="post" action="/SmileBrightbase/api/base_booking_update.php">
-          <div class="form-grid">
-            <div class="form-group full-width">
+        <form method="get" action="manage_booking.php">
+          <div class="verification-form">
+            <div class="form-group">
               <label for="referenceId">Reference ID *</label>
-              <input type="text" id="referenceId" name="reference_id" required placeholder="SB-2025XXXX-XXXX">
+              <input type="text" id="referenceId" name="ref" required placeholder="SB-20250101-XXXX">
             </div>
             <div class="form-group">
-              <label for="editDentist">Dentist</label>
-              <select id="editDentist" name="dentistId">
-                <option value="dr-chua-wen-zhan">Dr. Chua Wen Zhan</option>
-                <option value="dr-lau-gwen">Dr. Lau Gwen</option>
-                <option value="dr-sarah-tan">Dr. Sarah Tan</option>
-                <option value="dr-james-lim">Dr. James Lim</option>
-                <option value="dr-aisha-rahman">Dr. Aisha Rahman</option>
-                <option value="dr-alex-lee">Dr. Alex Lee</option>
-              </select>
+              <label for="email">Email (Optional)</label>
+              <input type="email" id="email" name="email" placeholder="your.email@example.com">
             </div>
             <div class="form-group">
-              <label for="editClinic">Clinic</label>
-              <select id="editClinic" name="clinicId">
-                <option value="orchard">Orchard Clinic</option>
-                <option value="marina-bay">Marina Bay Clinic</option>
-                <option value="bukit-timah">Bukit Timah Clinic</option>
-                <option value="tampines">Tampines Clinic</option>
-                <option value="jurong">Jurong Clinic</option>
-              </select>
+              <button type="submit" class="btn">Load Booking</button>
             </div>
-            <div class="form-group">
-              <label for="editService">Service</label>
-              <select id="editService" name="serviceCode">
-                <option value="general">General Checkup</option>
-                <option value="cleaning">Teeth Cleaning</option>
-                <option value="filling">Dental Filling</option>
-                <option value="extraction">Tooth Extraction</option>
-                <option value="braces">Braces Consultation</option>
-                <option value="whitening">Teeth Whitening</option>
-                <option value="implant">Dental Implant</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="editDate">Date</label>
-              <input type="date" id="editDate" name="date_iso">
-            </div>
-            <div class="form-group">
-              <label for="editTime">Time</label>
-              <input type="time" id="editTime" name="time_24">
-            </div>
-            <div class="form-group">
-              <label for="editEmail">Email</label>
-              <input type="email" id="editEmail" name="email">
-            </div>
-            <div class="form-group">
-              <label for="editPhone">Phone</label>
-              <input type="tel" id="editPhone" name="phone" placeholder="+65 1234 5678">
-            </div>
-            <div class="form-group full-width">
-              <label for="editNotes">Notes</label>
-              <textarea id="editNotes" name="notes" placeholder="Any additional notes..."></textarea>
-            </div>
-          </div>
-          
-          <div class="action-buttons">
-            <button type="submit" class="action-button primary">Update Booking</button>
-            <a href="../index.html" class="action-button secondary">Cancel</a>
           </div>
         </form>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="action-buttons">
-        <a href="booking_success.html" class="action-button secondary">Back to Success Page</a>
-        <a href="../book_appointment.html" class="action-button secondary">Book New Appointment</a>
+      <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+        <p style="color: var(--muted); margin-bottom: 15px;">To view or update your booking, please enter your reference ID above and click "Load Booking".</p>
+        <p style="color: var(--muted); font-size: 0.9rem;">Your reference ID was sent to you in the booking confirmation email.</p>
       </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons" style="margin-top: 30px;">
+        <a href="booking_success.html" class="action-button secondary">Back to Success Page</a>
+        <a href="../book_appointmentbase.html" class="action-button secondary">Book New Appointment</a>
+      </div>
+
     </div>
   </div>
 
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <section class="footer-col">
+        <h3>Smile Bright Dental</h3>
+        <p>We're committed to providing exceptional dental services in a comfortable and caring environment.</p>
+      </section>
+      <section class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../about_us.html">About Us</a></li>
+          <li><a href="../services.html">Services</a></li>
+          <li><a href="../clinics.html">Clinics</a></li>
+          <li><a href="../faq.html">FAQ</a></li>
+          <li><a href="../book_appointmentbase.html">Book Appointment</a></li>
+        </ul>
+      </section>
+      <section class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="../services.html#general">General Dentistry</a></li>
+          <li><a href="../services.html#cosmetic">Cosmetic Dentistry</a></li>
+          <li><a href="../services.html#orthodontics">Orthodontics</a></li>
+          <li><a href="../services.html#implants">Dental Implants</a></li>
+          <li><a href="../services.html#pediatric">Pediatric Dentistry</a></li>
+          <li><a href="../services.html#emergency">Emergency Dentistry</a></li>
+        </ul>
+      </section>
+      <section class="footer-col">
+        <h4>Contact Info</h4>
+        <ul class="contact">
+          <li>123 Orchard Road<br/>Singapore 238858</li>
+          <li>Phone: <a href="tel:+6562345678">+65 6234 5678</a></li>
+          <li>Email: info@smilebrightdental.sg</li>
+        </ul>
+      </section>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Smile Bright Dental. All rights reserved. · <a href="../privacy.html">Privacy Policy</a> · <a href="../terms.html">Terms of Service</a></p>
+    </div>
+  </footer>
+
   <script>
-    // Enhanced Dentist to Clinic Mapping with multiple clinic support
-    const dentistClinicMapping = {
-      'dr-chua-wen-zhan': { 
-        name: 'Dr. Chua Wen Zhan', 
-        clinics: [
-          { clinic: 'Orchard Clinic', clinic_id: 'orchard' }
-        ]
-      },
-      'dr-lau-gwen': { 
-        name: 'Dr. Lau Gwen', 
-        clinics: [
-          { clinic: 'Orchard Clinic', clinic_id: 'orchard' }
-        ]
-      },
-      'dr-sarah-tan': { 
-        name: 'Dr. Sarah Tan', 
-        clinics: [
-          { clinic: 'Marina Bay Clinic', clinic_id: 'marina-bay' }
-        ]
-      },
-      'dr-james-lim': { 
-        name: 'Dr. James Lim', 
-        clinics: [
-          { clinic: 'Bukit Timah Clinic', clinic_id: 'bukit-timah' }
-        ]
-      },
-      'dr-aisha-rahman': { 
-        name: 'Dr. Aisha Rahman', 
-        clinics: [
-          { clinic: 'Tampines Clinic', clinic_id: 'tampines' }
-        ]
-      },
-      'dr-alex-lee': { 
-        name: 'Dr. Alex Lee', 
-        clinics: [
-          { clinic: 'Jurong Clinic', clinic_id: 'jurong' }
-        ]
-      }
-    };
-
-    const dentistNameMapping = {
-      'dr-chua-wen-zhan': 'Dr. Chua Wen Zhan',
-      'dr-lau-gwen': 'Dr. Lau Gwen',
-      'dr-sarah-tan': 'Dr. Sarah Tan',
-      'dr-james-lim': 'Dr. James Lim',
-      'dr-aisha-rahman': 'Dr. Aisha Rahman',
-      'dr-alex-lee': 'Dr. Alex Lee'
-    };
-
-    const serviceLabelMapping = {
-      'general': 'General Checkup',
-      'cleaning': 'Teeth Cleaning',
-      'filling': 'Dental Filling',
-      'extraction': 'Tooth Extraction',
-      'braces': 'Braces Consultation',
-      'whitening': 'Teeth Whitening',
-      'implant': 'Dental Implant',
-      'other': 'Other'
-    };
-
-    let currentBooking = null;
-
-    // Initialize page
-    document.addEventListener('DOMContentLoaded', function() {
-      // Check if reference ID is in URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const ref = urlParams.get('ref');
-      
-      if (ref) {
-        document.getElementById('referenceId').value = ref;
-        loadBooking();
-      }
-    });
-
-    // Load booking button
-    document.getElementById('loadBookingBtn').addEventListener('click', loadBooking);
-
-    function loadBooking() {
-      const referenceId = document.getElementById('referenceId').value.trim();
-      const email = document.getElementById('email').value.trim();
-      
-      if (!referenceId) {
-        showError('Please enter a reference ID');
-        return;
-      }
-
-      // Show loading state
-      const loadBtn = document.getElementById('loadBookingBtn');
-      loadBtn.disabled = true;
-      loadBtn.innerHTML = '<span class="spinner"></span>Loading...';
-
-      // Build URL
-      let url = `/SmileBright/api/booking/by-ref.php?ref=${encodeURIComponent(referenceId)}`;
-      if (email) {
-        url += `&email=${encodeURIComponent(email)}`;
-      }
-
-      fetch(url)
-        .then(async response => {
-          const text = await response.text();
-          let data;
-          
-          try {
-            data = JSON.parse(text);
-          } catch (e) {
-            console.error('Non-JSON response:', text);
-            throw new Error(`Invalid response format (status ${response.status})`);
-          }
-          
-          if (data.ok && data.booking) {
-            currentBooking = data.booking;
-            displayBooking(data.booking);
-            showEditForm();
-            hideError();
-            showStatus('Booking loaded successfully', 'success');
-          } else {
-            throw new Error(data.error || 'Booking not found');
-          }
-        })
-        .catch(error => {
-          console.error('Error loading booking:', error);
-          showError('Failed to load booking: ' + error.message);
-        })
-        .finally(() => {
-          loadBtn.disabled = false;
-          loadBtn.innerHTML = 'Load Booking';
-        });
-    }
-
-    function displayBooking(booking) {
-      document.getElementById('displayReferenceId').textContent = booking.referenceId;
-      document.getElementById('displayStatus').textContent = booking.status || 'scheduled';
-      document.getElementById('displayDentist').textContent = booking.dentistName || 'Unknown';
-      document.getElementById('displayClinic').textContent = booking.clinicName || 'Unknown';
-      
-      const dateValue = booking.dateIso || booking.preferred_date;
-      if (dateValue) {
-        const date = new Date(dateValue + 'T00:00:00');
-        document.getElementById('displayDate').textContent = date.toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        });
-      }
-      
-      const timeValue = booking.time24 || booking.preferred_time;
-      if (timeValue) {
-        // Display time in 24-hour format (e.g., 09:00, 14:00)
-        document.getElementById('displayTime').textContent = timeValue.substring(0, 5);
-      }
-      
-      document.getElementById('currentBooking').style.display = 'block';
-    }
-
-    function showEditForm() {
-      if (!currentBooking) return;
-
-      // Populate form fields
-      document.getElementById('editDentist').value = currentBooking.dentistId || 'dr-chua-wen-zhan';
-      document.getElementById('editClinic').value = currentBooking.clinicId || 'orchard';
-      document.getElementById('editService').value = currentBooking.serviceCode || 'general';
-      document.getElementById('editDate').value = currentBooking.dateIso || currentBooking.preferred_date || '';
-      document.getElementById('editTime').value = currentBooking.time24 || currentBooking.preferred_time || '';
-      document.getElementById('editEmail').value = currentBooking.email || '';
-      document.getElementById('editPhone').value = currentBooking.phone || '';
-      document.getElementById('editNotes').value = currentBooking.notes || '';
-
-      // Set up dentist change handler
-      document.getElementById('editDentist').addEventListener('change', handleDentistChange);
-      document.getElementById('editDate').addEventListener('change', handleDateChange);
-
-      document.getElementById('editForm').style.display = 'block';
-    }
-
-    // Handle dentist change - auto-update clinic
-    function handleDentistChange() {
-      const dentistId = document.getElementById('editDentist').value;
-      const clinicSelect = document.getElementById('editClinic');
-      const mapping = dentistClinicMapping[dentistId];
-      
-      if (mapping && mapping.clinics) {
-        // Clear existing options
-        clinicSelect.innerHTML = '';
-        
-        // Add options for this dentist's clinics
-        mapping.clinics.forEach(clinic => {
-          const option = document.createElement('option');
-          option.value = clinic.clinic_id;
-          option.textContent = clinic.clinic;
-          clinicSelect.appendChild(option);
-        });
-        
-        // Auto-select first clinic if only one option
-        if (mapping.clinics.length === 1) {
-          clinicSelect.value = mapping.clinics[0].clinic_id;
-        }
-        
-        // Refresh availability
-        refreshAvailability();
-      }
-    }
-
-    // Handle date change - refresh availability
-    function handleDateChange() {
-      refreshAvailability();
-    }
-
-    // Refresh time availability
-    async function refreshAvailability() {
-      const dentistId = document.getElementById('editDentist').value;
-      const clinicId = document.getElementById('editClinic').value;
-      const date = document.getElementById('editDate').value;
-      
-      if (!dentistId || !clinicId || !date) {
-        return;
-      }
-      
-      // Fixed time slots in 24-hour format
-      const FIXED_TIME_SLOTS = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'];
-      
-      try {
-        const response = await fetch(`/SmileBright/api/booking/availability.php?clinicId=${encodeURIComponent(clinicId)}&dentistId=${encodeURIComponent(dentistId)}&date=${encodeURIComponent(date)}`);
-        const data = await response.json();
-        
-        if (data.ok && data.slots) {
-          const timeSelect = document.getElementById('editTime');
-          const currentValue = timeSelect.value;
-          
-          // Clear existing options
-          timeSelect.innerHTML = '';
-          
-          // Add only the 7 fixed time slots
-          FIXED_TIME_SLOTS.forEach(time => {
-            const option = document.createElement('option');
-            option.value = time;
-            option.textContent = time;
-            
-            // Disable if not available (unless it's the current booking time)
-            if (!data.slots.includes(time) && time !== currentValue) {
-              option.disabled = true;
-              option.textContent = `${time} (Unavailable)`;
-            }
-            
-            timeSelect.appendChild(option);
-          });
-          
-          // Restore previous selection if still available
-          if (currentValue && FIXED_TIME_SLOTS.includes(currentValue)) {
-            timeSelect.value = currentValue;
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching availability:', error);
-        // On error, just show the fixed slots
-        const timeSelect = document.getElementById('editTime');
-        const currentValue = timeSelect.value;
-        timeSelect.innerHTML = '';
-        FIXED_TIME_SLOTS.forEach(time => {
-          const option = document.createElement('option');
-          option.value = time;
-          option.textContent = time;
-          timeSelect.appendChild(option);
-        });
-        if (currentValue && FIXED_TIME_SLOTS.includes(currentValue)) {
-          timeSelect.value = currentValue;
-        }
-      }
-    }
-
-    // Update form submission
-    document.getElementById('updateForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      if (!currentBooking) {
-        showError('No booking loaded');
-        return;
-      }
-
-      const updateBtn = document.getElementById('updateBtn');
-      updateBtn.disabled = true;
-      updateBtn.innerHTML = '<span class="spinner"></span>Updating...';
-
-      // Collect form data
-      const formData = new FormData(this);
-      const changes = {};
-      
-      // Only include changed fields
-      if (formData.get('dentistId') !== currentBooking.dentistId) {
-        changes.dentistId = formData.get('dentistId');
-        changes.dentistName = dentistNameMapping[formData.get('dentistId')];
-      }
-      
-      if (formData.get('clinicId') !== currentBooking.clinicId) {
-        changes.clinicId = formData.get('clinicId');
-        const mapping = dentistClinicMapping[formData.get('dentistId') || currentBooking.dentistId];
-        changes.clinicName = mapping?.clinics?.find(c => c.clinic_id === formData.get('clinicId'))?.clinic || 'Unknown';
-      }
-      
-      if (formData.get('serviceCode') !== currentBooking.serviceCode) {
-        changes.serviceCode = formData.get('serviceCode');
-        changes.serviceLabel = serviceLabelMapping[formData.get('serviceCode')];
-      }
-      
-      if (formData.get('dateIso') !== (currentBooking.dateIso || currentBooking.preferred_date)) {
-        changes.dateIso = formData.get('dateIso');
-      }
-      
-      if (formData.get('time24') !== (currentBooking.time24 || currentBooking.preferred_time)) {
-        changes.time24 = formData.get('time24');
-      }
-      
-      if (formData.get('email') !== currentBooking.email) {
-        changes.email = formData.get('email');
-      }
-      
-      if (formData.get('phone') !== currentBooking.phone) {
-        changes.phone = formData.get('phone');
-      }
-      
-      if (formData.get('notes') !== currentBooking.notes) {
-        changes.notes = formData.get('notes');
-      }
-
-      // Check if there are any changes
-      if (Object.keys(changes).length === 0) {
-        showStatus('No changes detected', 'warning');
-        updateBtn.disabled = false;
-        updateBtn.innerHTML = 'Update Booking';
-        return;
-      }
-
-      // Submit update
-      const updateData = {
-        referenceId: currentBooking.referenceId,
-        changes: changes
-      };
-
-      fetch('/SmileBright/api/booking/update.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updateData)
-      })
-      .then(async response => {
-        const text = await response.text();
-        let data;
-        
-        try {
-          data = JSON.parse(text);
-        } catch (e) {
-          console.error('Non-JSON response:', text);
-          throw new Error(`Invalid response format (status ${response.status})`);
-        }
-        
-        if (data.ok) {
-          showStatus('Booking updated successfully!', 'success');
-          // Reload the booking to get updated data
-          setTimeout(() => {
-            loadBooking();
-          }, 1000);
-        } else {
-          throw new Error(data.error || 'Update failed');
-        }
-      })
-      .catch(error => {
-        console.error('Error updating booking:', error);
-        showError('Failed to update booking: ' + error.message);
-      })
-      .finally(() => {
-        updateBtn.disabled = false;
-        updateBtn.innerHTML = 'Update Booking';
-      });
-    });
-
-    // Cancel button
-    document.getElementById('cancelBtn').addEventListener('click', function() {
-      document.getElementById('editForm').style.display = 'none';
-    });
-
-    function showError(message) {
-      document.getElementById('errorText').textContent = message;
-      document.getElementById('errorMessage').style.display = 'block';
-    }
-
-    function hideError() {
-      document.getElementById('errorMessage').style.display = 'none';
-    }
-
-    function showStatus(message, type) {
-      const banner = document.getElementById('statusBanner');
-      const messageSpan = document.getElementById('statusMessage');
-      
-      banner.className = `status-banner ${type}`;
-      messageSpan.textContent = message;
-      banner.style.display = 'block';
-      
-      // Auto-hide after 5 seconds
-      setTimeout(() => {
-        banner.style.display = 'none';
-      }, 5000);
-    }
-
+    // Base Version - Simple JavaScript only (NO AJAX, NO JSON, NO jQuery)
+    
     // Mobile menu toggle
     function toggleMobileMenu() {
       const navMenu = document.getElementById('navMenu');
-      navMenu.classList.toggle('active');
+      if (navMenu) {
+        navMenu.classList.toggle('active');
+      }
     }
     
     // Dropdown toggle for mobile/touch devices
@@ -893,6 +430,51 @@
         });
       }
     });
+
+    // Show status message from URL parameter (if redirected from PHP)
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      // Check if reference ID is in URL - redirect to PHP page to load booking
+      const ref = urlParams.get('ref');
+      if (ref) {
+        // Redirect to PHP page with reference ID (will handle display server-side)
+        window.location.href = 'manage_booking.php?ref=' + encodeURIComponent(ref) + (urlParams.get('email') ? '&email=' + encodeURIComponent(urlParams.get('email')) : '');
+        return;
+      }
+      
+      const status = urlParams.get('status');
+      const message = urlParams.get('message');
+      
+      if (status && message) {
+        const banner = document.getElementById('statusBanner');
+        const messageSpan = document.getElementById('statusMessage');
+        
+        if (banner && messageSpan) {
+          banner.className = 'status-banner ' + status;
+          messageSpan.textContent = decodeURIComponent(message);
+          banner.style.display = 'block';
+          
+          // Remove from URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }
+      
+      const error = urlParams.get('error');
+      if (error) {
+        const errorDiv = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        
+        if (errorDiv && errorText) {
+          errorText.textContent = decodeURIComponent(error);
+          errorDiv.style.display = 'block';
+          
+          // Remove from URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }
+    });
   </script>
 </body>
 </html>
+

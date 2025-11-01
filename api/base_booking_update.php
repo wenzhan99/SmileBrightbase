@@ -1,6 +1,8 @@
 <?php
 // Base booking update via HTML form (no AJAX). Validates input, updates DB, renders HTML confirmation.
 
+require_once __DIR__ . '/config.php';
+
 ini_set('display_errors', '0');
 header('X-Content-Type-Options: nosniff');
 
@@ -52,13 +54,12 @@ if ($errors) {
   exit();
 }
 
-$mysqli = @new mysqli('127.0.0.1', 'root', '', 'smilebright', 3306);
+// Check database connection
 if ($mysqli->connect_errno) {
   http_response_code(500);
   echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Database Error</title></head><body><h1>Database connection failed</h1></body></html>';
   exit();
 }
-$mysqli->set_charset('utf8mb4');
 
 // Fetch existing row
 $stmt = $mysqli->prepare('SELECT * FROM bookings WHERE reference_id = ?');
@@ -69,7 +70,6 @@ $stmt->close();
 if (!$existing) {
   http_response_code(404);
   echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Not Found</title></head><body><h1>Booking not found</h1></body></html>';
-  $mysqli->close();
   exit();
 }
 
@@ -84,7 +84,6 @@ if ($status !== null && $status !== '') { $fields[] = 'status = ?'; $values[] = 
 
 if (!$fields) {
   echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>No Changes</title></head><body><h1>No changes provided</h1><p><a href="/SmileBrightbase/public/booking/manage_booking.html">Back</a></p></body></html>';
-  $mysqli->close();
   exit();
 }
 
@@ -96,7 +95,6 @@ $stmt = $mysqli->prepare($sql);
 if (!$stmt) {
   http_response_code(500);
   echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Database Error</title></head><body><h1>Failed to prepare update</h1></body></html>';
-  $mysqli->close();
   exit();
 }
 $stmt->bind_param($types, ...$values);
@@ -109,7 +107,6 @@ $stmt->bind_param('s', $referenceId);
 $stmt->execute();
 $row = $stmt->get_result()->fetch_assoc();
 $stmt->close();
-$mysqli->close();
 
 if (!$ok) {
   http_response_code(500);

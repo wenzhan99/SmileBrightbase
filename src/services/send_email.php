@@ -4,7 +4,7 @@
  * Sends appointment confirmation emails with reschedule/cancel links
  */
 
-require_once __DIR__ . '/email_config.php';
+require_once __DIR__ . '/../config/email.php';
 
 function sendBookingConfirmation($appointmentData) {
     // Extract data
@@ -103,8 +103,7 @@ function sendBookingConfirmation($appointmentData) {
             <div style=\"border-top:2px solid " . BRAND_BORDER . ";padding-top:20px;margin-top:24px;\">
                 <p style=\"margin:0 0 12px;font-size:14px;color:" . BRAND_MUTED_TEXT . ";\">
                     <strong>⚠️ Didn't make this booking?</strong><br>
-                    Please contact us immediately at <a href=\"tel:" . str_replace(' ', '', SUPPORT_PHONE) . "\" style=\"color:" . BRAND_PRIMARY_COLOR . ";\">" . SUPPORT_PHONE . "</a> 
-                    or <a href=\"mailto:" . SUPPORT_EMAIL . "\" style=\"color:" . BRAND_PRIMARY_COLOR . ";\">" . SUPPORT_EMAIL . "</a>
+                    Please contact us immediately at " . SUPPORT_PHONE . " or " . SUPPORT_EMAIL . "
                 </p>
             </div>
         </div>

@@ -212,7 +212,7 @@ class EmailService {
      */
     private function logEmail($referenceId, $recipientType, $toEmail, $subject, $status, $error = null) {
         try {
-            $mysqli = new mysqli('127.0.0.1', 'root', '', 'smilebright', 3306);
+            $mysqli = new mysqli('127.0.0.1', 'root', '', 'smilebrightbase', 3306);
             
             $stmt = $mysqli->prepare("
                 INSERT INTO email_log (reference_id, recipient_type, to_addr, subject, status, last_error)

@@ -1,329 +1,281 @@
 <?php
-// SmileBright Booking API - Update Booking Endpoint
-// /api/booking/update.php
+/**
+ * SmileBright Booking API - Update Booking Endpoint (Base Version Compliant)
+ * /api/booking/update.php
+ * 
+ * Base Version: Accepts POST form data, no JSON/AJAX
+ * Returns HTML redirects or error pages
+ */
 
-// Set JSON response headers immediately
-header('Content-Type: application/json; charset=utf-8');
-header('Cache-Control: no-store');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+require_once __DIR__ . '/../config.php';
 
-// Disable error display to prevent HTML output
 ini_set('display_errors', '0');
-error_reporting(E_ALL);
+header('X-Content-Type-Options: nosniff');
 
-// Start output buffering to capture any accidental output
-ob_start();
-
-// Handle preflight requests
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
-// Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['ok' => false, 'error' => 'Method not allowed']);
-    exit();
+  http_response_code(405);
+  echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Method Not Allowed</title></head><body><h1>405 - Method Not Allowed</h1></body></html>';
+  exit();
 }
 
-// Initialize response
-$response = ['ok' => false, 'error' => 'Unknown error'];
+function h($v){ return htmlspecialchars((string)$v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
 
-try {
-    // Get JSON input
-    $input = json_decode(file_get_contents('php://input'), true);
+// Collect POST inputs (Base Version - form data, not JSON)
+$referenceId = trim($_POST['reference_id'] ?? '');
+$dateIso     = isset($_POST['date_iso']) ? trim($_POST['date_iso']) : null;
+$time24      = isset($_POST['time_24']) ? trim($_POST['time_24']) : null;
+$notes       = isset($_POST['notes']) ? trim($_POST['notes']) : null;
+$status      = isset($_POST['status']) ? trim($_POST['status']) : null;
 
-    if (!$input) {
-        throw new Exception('Invalid JSON input');
-    }
+$errors = [];
+if ($referenceId === '') $errors[] = 'Reference ID is required';
+if ($dateIso !== null && $dateIso !== '') {
+  $d = DateTime::createFromFormat('Y-m-d', $dateIso);
+  if (!$d || $d->format('Y-m-d') !== $dateIso) $errors[] = 'Invalid date format (Y-m-d)';
+  // Check if date is in the future
+  if ($d && $d < new DateTime()) $errors[] = 'Appointment date must be in the future';
+}
+if ($time24 !== null && $time24 !== '') {
+  $t = DateTime::createFromFormat('H:i', $time24);
+  if (!$t || $t->format('H:i') !== $time24) $errors[] = 'Invalid time format (HH:MM)';
+}
+if ($status !== null && $status !== '') {
+  $allowed = ['scheduled','confirmed','cancelled','completed','rescheduled'];
+  if (!in_array(strtolower($status), $allowed, true)) $errors[] = 'Invalid status value';
+}
 
-    // Validate required fields
-    if (!isset($input['referenceId']) || !isset($input['changes'])) {
-        echo json_encode(['ok' => false, 'error' => 'Missing required fields: referenceId and changes']);
-        exit();
-    }
+if ($errors) {
+  http_response_code(400);
+  echo '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1" />'
+     . '<title>Update Error</title>'
+     . '<style>body{font:16px/1.55 Segoe UI,Arial;background:#f5f7fb;color:#243042;margin:0}.wrap{max-width:880px;margin:32px auto;padding:0 16px}.card{background:#fff;border:1px solid #e5e9f3;border-radius:12px;box-shadow:0 6px 20px rgba(22,39,76,.06);padding:22px}</style>'
+     . '</head><body><div class="wrap"><h1>There were problems with your update</h1><div class="card"><ul>';
+  foreach ($errors as $e) echo '<li>'.h($e).'</li>';
+  echo '</ul><p><a href="/SmileBrightbase/public/booking/manage_booking.html?ref='.h($referenceId).'">Go back</a></p></div></div></body></html>';
+  exit();
+}
 
-    $referenceId = $input['referenceId'];
-    $changes = $input['changes'];
+// Check database connection
+if ($mysqli->connect_errno) {
+  http_response_code(500);
+  echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Database Error</title></head><body><h1>Database connection failed</h1></body></html>';
+  exit();
+}
 
-    if (empty($changes)) {
-        echo json_encode(['ok' => false, 'error' => 'No changes provided']);
-        exit();
-    }
+// Fetch existing booking
+$stmt = $mysqli->prepare('SELECT * FROM bookings WHERE reference_id = ?');
+if (!$stmt) {
+  http_response_code(500);
+  echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Database Error</title></head><body><h1>Database prepare failed</h1></body></html>';
+  exit();
+}
 
-    // Database connection
-    try {
-        $mysqli = new mysqli('127.0.0.1', 'root', '', 'smilebright', 3306);
-        if ($mysqli->connect_errno) {
-            throw new Exception('Database connection failed: ' . $mysqli->connect_error);
-        }
-        $mysqli->set_charset('utf8mb4');
-    } catch (Exception $e) {
-        echo json_encode(['ok' => false, 'error' => 'Database connection failed']);
-        exit();
-    }
+$stmt->bind_param('s', $referenceId);
+$stmt->execute();
+$existing = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 
-    // Check if booking exists
-    $stmt = $mysqli->prepare("SELECT * FROM bookings WHERE reference_id = ?");
-    if (!$stmt) {
-        throw new Exception('Database prepare failed: ' . $mysqli->error);
-    }
-    
-    $stmt->bind_param('s', $referenceId);
+if (!$existing) {
+  http_response_code(404);
+  echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Not Found</title></head><body><h1>Booking not found</h1><p><a href="/SmileBrightbase/public/booking/manage_booking.html">Go back</a></p></body></html>';
+  exit();
+}
+
+// Build update fields
+$fields = [];
+$values = [];
+$types = '';
+
+if ($dateIso !== null && $dateIso !== '') { 
+  $fields[] = 'date = ?'; 
+  $values[] = $dateIso; 
+  $types .= 's'; 
+}
+if ($time24 !== null && $time24 !== '') { 
+  $fields[] = 'time = ?'; 
+  $values[] = $time24; 
+  $types .= 's'; 
+}
+if ($notes !== null) { 
+  $fields[] = 'notes = ?'; 
+  $values[] = $notes; 
+  $types .= 's'; 
+}
+if ($status !== null && $status !== '') { 
+  $fields[] = 'status = ?'; 
+  $values[] = strtolower($status); 
+  $types .= 's'; 
+}
+
+if (!$fields) {
+  http_response_code(400);
+  echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>No Changes</title></head><body><h1>No changes provided</h1><p><a href="/SmileBrightbase/public/booking/manage_booking.html?ref='.h($referenceId).'">Back</a></p></body></html>';
+  exit();
+}
+
+// Check for booking conflicts if date/time changed
+if (($dateIso || $time24) && isset($existing['doctor_name'])) {
+  $checkDate = $dateIso ?? $existing['date'];
+  $checkTime = $time24 ?? $existing['time'];
+  $checkDoctor = $existing['doctor_name'];
+  
+  $stmt = $mysqli->prepare("SELECT reference_id FROM bookings WHERE doctor_name = ? AND date = ? AND time = ? AND reference_id != ?");
+  if ($stmt) {
+    $stmt->bind_param('ssss', $checkDoctor, $checkDate, $checkTime, $referenceId);
     $stmt->execute();
     $result = $stmt->get_result();
-    $existingBooking = $result->fetch_assoc();
+    
+    if ($result->num_rows > 0) {
+      $stmt->close();
+      http_response_code(409);
+      echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Conflict</title></head><body><h1>Time slot is already booked for this dentist</h1><p><a href="/SmileBrightbase/public/booking/manage_booking.html?ref='.h($referenceId).'">Go back</a></p></body></html>';
+      exit();
+    }
     $stmt->close();
-    
-    if (!$existingBooking) {
-        echo json_encode(['ok' => false, 'error' => 'Booking not found']);
-        exit();
-    }
-
-    // Validate changes
-    $allowedFields = [
-        'dentist_id', 'dentist_name', 'clinic_id', 'clinic_name',
-        'service_code', 'service_label', 'preferred_date', 'preferred_time',
-        'dateIso', 'time24', 'email', 'phone', 'notes', 'status',
-        // Add camelCase versions for frontend compatibility
-        'dentistId', 'dentistName', 'clinicId', 'clinicName', 'serviceCode', 'serviceLabel',
-        'additionalNotes' // Map to 'notes' in DB
-    ];
-
-    // Allowed status values (must match database)
-    $allowedStatuses = ['scheduled', 'confirmed', 'cancelled', 'completed', 'rescheduled'];
-    
-    $validChanges = [];
-    foreach ($changes as $field => $value) {
-        if (in_array($field, $allowedFields)) {
-            // Map field names to database field names
-            $dbField = $field;
-            if ($field === 'dateIso') {
-                $dbField = 'preferred_date';
-            } elseif ($field === 'time24') {
-                $dbField = 'preferred_time';
-            } elseif ($field === 'dentistId') {
-                $dbField = 'dentist_id';
-            } elseif ($field === 'dentistName') {
-                $dbField = 'dentist_name';
-            } elseif ($field === 'clinicId') {
-                $dbField = 'clinic_id';
-            } elseif ($field === 'clinicName') {
-                $dbField = 'clinic_name';
-            } elseif ($field === 'serviceCode') {
-                $dbField = 'service_code';
-            } elseif ($field === 'serviceLabel') {
-                $dbField = 'service_label';
-            } elseif ($field === 'additionalNotes') {
-                $dbField = 'notes';
-            }
-            
-            // Validate and normalize status
-            if ($field === 'status') {
-                $value = strtolower($value); // Normalize to lowercase
-                if (!in_array($value, $allowedStatuses)) {
-                    // Skip invalid status values
-                    continue;
-                }
-            }
-            
-            $validChanges[$dbField] = $value;
-        }
-    }
-
-    if (empty($validChanges)) {
-        echo json_encode(['ok' => false, 'error' => 'No valid changes provided']);
-        exit();
-    }
-
-    // Validate date/time if provided
-    $checkDate = $validChanges['preferred_date'] ?? null;
-    $checkTime = $validChanges['preferred_time'] ?? null;
-    
-    if ($checkDate) {
-        $date = DateTime::createFromFormat('Y-m-d', $checkDate);
-        if (!$date || $date->format('Y-m-d') !== $checkDate) {
-            echo json_encode(['ok' => false, 'error' => 'Invalid date format']);
-            exit();
-        }
-        
-        // Check if date is in the future
-        if ($date < new DateTime()) {
-            echo json_encode(['ok' => false, 'error' => 'Appointment date must be in the future']);
-            exit();
-        }
-    }
-
-    if ($checkTime) {
-        $time = DateTime::createFromFormat('H:i', $checkTime);
-        if (!$time || $time->format('H:i') !== $checkTime) {
-            echo json_encode(['ok' => false, 'error' => 'Invalid time format']);
-            exit();
-        }
-    }
-
-    // Check for conflicts if date/time/dentist is being changed
-    if ($checkDate || $checkTime || isset($validChanges['dentist_id'])) {
-        $finalDate = $checkDate ?? $existingBooking['preferred_date'];
-        $finalTime = $checkTime ?? $existingBooking['preferred_time'];
-        $finalDentist = $validChanges['dentist_id'] ?? $existingBooking['dentist_id'];
-        
-        $stmt = $mysqli->prepare("
-            SELECT reference_id FROM bookings 
-            WHERE dentist_id = ? AND preferred_date = ? AND preferred_time = ? 
-            AND reference_id != ?
-        ");
-        
-        if ($stmt) {
-            $stmt->bind_param('ssss', $finalDentist, $finalDate, $finalTime, $referenceId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            
-            if ($result->num_rows > 0) {
-                $stmt->close();
-                echo json_encode(['ok' => false, 'error' => 'Time slot is already booked for this dentist']);
-                exit();
-            }
-            $stmt->close();
-        }
-    }
-
-    // Build update query
-    $updateFields = [];
-    $updateValues = [];
-    $types = '';
-    
-    foreach ($validChanges as $field => $value) {
-        $updateFields[] = "`$field` = ?";
-        $updateValues[] = $value;
-        $types .= 's';
-    }
-    
-    $updateFields[] = "`updated_at` = CURRENT_TIMESTAMP";
-    $updateQuery = "UPDATE bookings SET " . implode(', ', $updateFields) . " WHERE reference_id = ?";
-    $updateValues[] = $referenceId;
-    $types .= 's';
-
-    // Execute update
-    $stmt = $mysqli->prepare($updateQuery);
-    if (!$stmt) {
-        throw new Exception('Database prepare failed: ' . $mysqli->error);
-    }
-    
-    $stmt->bind_param($types, ...$updateValues);
-    
-    if (!$stmt->execute()) {
-        throw new Exception('Database update failed: ' . $stmt->error);
-    }
-    
-    $stmt->close();
-
-    // Log changes to booking_history table
-    foreach ($validChanges as $field => $newValue) {
-        $oldValue = $existingBooking[$field] ?? null;
-        
-        if ($oldValue !== $newValue) {
-            $stmt = $mysqli->prepare("
-                INSERT INTO booking_history (reference_id, field, old_value, new_value, changed_by)
-                VALUES (?, ?, ?, ?, 'patient')
-            ");
-            
-            if ($stmt) {
-                $stmt->bind_param('ssss', $referenceId, $field, $oldValue, $newValue);
-                $stmt->execute();
-                $stmt->close();
-            }
-        }
-    }
-
-    // Send update emails
-    $emailSent = false;
-    try {
-        // Get updated booking data
-        $stmt = $mysqli->prepare("SELECT * FROM bookings WHERE reference_id = ?");
-        $stmt->bind_param('s', $referenceId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $updatedBooking = $result->fetch_assoc();
-        $stmt->close();
-        
-        if ($updatedBooking) {
-            // Send email notification about the update
-            $emailData = [
-                'referenceId' => $updatedBooking['reference_id'],
-                'patient' => [
-                    'firstName' => explode(' ', $updatedBooking['full_name'])[0] ?? 'Patient',
-                    'lastName' => implode(' ', array_slice(explode(' ', $updatedBooking['full_name']), 1)) ?? '',
-                    'email' => $updatedBooking['email'],
-                    'phone' => $updatedBooking['phone']
-                ],
-                'appointment' => [
-                    'dentistId' => $updatedBooking['dentist_id'],
-                    'dentistName' => $updatedBooking['dentist_name'],
-                    'clinicId' => $updatedBooking['clinic_id'],
-                    'clinicName' => $updatedBooking['clinic_name'],
-                    'serviceCode' => $updatedBooking['service_code'],
-                    'serviceLabel' => $updatedBooking['service_label'],
-                    'dateIso' => $updatedBooking['preferred_date'],
-                    'time24' => $updatedBooking['preferred_time'],
-                    'dateDisplay' => date('l, j F Y', strtotime($updatedBooking['preferred_date'])),
-                    'timeDisplay' => date('g:i A', strtotime($updatedBooking['preferred_time']))
-                ],
-                'notes' => $updatedBooking['message'],
-                'updateType' => 'booking_updated'
-            ];
-            
-            // Send email via the email service
-            $emailServiceUrl = 'http://localhost:4001/send-booking-emails';
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $emailServiceUrl);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($emailData));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json',
-                'X-Email-Token: sb_email_token_use_this_exact_string'
-            ]);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-            
-            $emailResponse = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-            
-            $emailSent = ($httpCode === 200);
-        }
-    } catch (Exception $e) {
-        error_log('Email sending failed: ' . $e->getMessage());
-        $emailSent = false;
-    }
-
-    $mysqli->close();
-
-    // Set success response
-    $response = [
-        'ok' => true,
-        'referenceId' => $referenceId,
-        'message' => 'Booking updated successfully',
-        'updated' => array_keys($validChanges),
-        'redirectUrl' => '/SmileBright/public/booking/manage_booking.html?ref=' . $referenceId,
-        'emailStatus' => $emailSent ? 'sent' : 'queued'
-    ];
-
-} catch (Exception $e) {
-    $response = ['ok' => false, 'error' => $e->getMessage()];
-} catch (Throwable $e) {
-    $response = ['ok' => false, 'error' => 'Server error: ' . $e->getMessage()];
-} finally {
-    // Clean any accidental output
-    $noise = ob_get_clean();
-    if ($noise) {
-        error_log('[update.php noise] ' . substr($noise, 0, 500));
-    }
-    
-    // Return response
-    echo json_encode($response, JSON_UNESCAPED_SLASHES);
+  }
 }
+
+$fields[] = 'updated_at = CURRENT_TIMESTAMP';
+$sql = 'UPDATE bookings SET '.implode(', ', $fields).' WHERE reference_id = ?';
+$values[] = $referenceId; 
+$types .= 's';
+
+$stmt = $mysqli->prepare($sql);
+if (!$stmt) {
+  http_response_code(500);
+  echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Database Error</title></head><body><h1>Failed to prepare update</h1></body></html>';
+  exit();
+}
+
+$stmt->bind_param($types, ...$values);
+$ok = $stmt->execute();
+$stmt->close();
+
+if (!$ok) {
+  http_response_code(500);
+  echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Update Failed</title></head><body><h1>Failed to update booking</h1><p><a href="/SmileBrightbase/public/booking/manage_booking.html?ref='.h($referenceId).'">Go back</a></p></body></html>';
+  exit();
+}
+
+// Try to send email notification (fail silently if email fails)
+try {
+  require_once __DIR__ . '/../../src/config/email.php';
+  require_once __DIR__ . '/../../src/services/native_email_service.php';
+  
+  // Get updated booking
+  $stmt = $mysqli->prepare("SELECT * FROM bookings WHERE reference_id = ?");
+  $stmt->bind_param('s', $referenceId);
+  $stmt->execute();
+  $updated = $stmt->get_result()->fetch_assoc();
+  $stmt->close();
+  
+  if ($updated) {
+    // Service name mapping
+    $serviceNames = [
+      'general' => 'General Checkup',
+      'cleaning' => 'Teeth Cleaning',
+      'filling' => 'Dental Filling',
+      'extraction' => 'Tooth Extraction',
+      'braces' => 'Braces Consultation',
+      'whitening' => 'Teeth Whitening',
+      'implant' => 'Dental Implant',
+      'others' => 'Others'
+    ];
+    
+    // Prepare booking data for email service
+    $bookingData = [
+      'email' => $updated['email'],
+      'full_name' => $updated['first_name'] . ' ' . $updated['last_name'],
+      'first_name' => $updated['first_name'],
+      'last_name' => $updated['last_name'],
+      'phone' => $updated['phone'],
+      'preferred_date' => $updated['date'],
+      'preferred_time' => $updated['time'],
+      'preferred_clinic' => $updated['location_name'],
+      'doctor_name' => $updated['doctor_name'],
+      'clinic_name' => $updated['location_name'],
+      'service' => $serviceNames[$updated['service_key']] ?? ucfirst($updated['service_key']),
+      'reference_id' => $referenceId,
+      'notes' => $updated['notes'] ?: 'None',
+      'id' => $referenceId,
+      'reschedule_token' => bin2hex(random_bytes(16))
+    ];
+    
+    $emailService = new SmileBrightEmailService();
+    
+    // 1. Send confirmation to PATIENT
+    $patientResult = $emailService->sendBookingConfirmation($bookingData);
+    if ($patientResult['success']) {
+      error_log('✅ Patient email sent to: ' . $updated['email']);
+    } else {
+      error_log('❌ Patient email failed: ' . $patientResult['message']);
+    }
+    
+    // 2. Send notification to CLINIC
+    $clinicEmail = defined('EMAIL_BCC_ADMIN') && !empty(EMAIL_BCC_ADMIN) ? EMAIL_BCC_ADMIN : 'smilebrightsg.info@gmail.com';
+    
+    $patientName = $updated['first_name'] . ' ' . $updated['last_name'];
+    $serviceName = $serviceNames[$updated['service_key']] ?? ucfirst($updated['service_key']);
+    $doctorName = $updated['doctor_name'];
+    $clinicName = $updated['location_name'];
+    $appointmentDate = date('M j, Y', strtotime($updated['date']));
+    $appointmentTime = date('g:i A', strtotime($updated['time']));
+    
+    $clinicSubject = "Patient Updated Booking - Ref {$referenceId} - {$patientName}";
+    $clinicHtml = "<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='UTF-8'>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f7fb; }
+    .card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .header { background: #1f4f86; color: white; padding: 20px; border-radius: 8px 8px 0 0; margin: -20px -20px 20px -20px; }
+    .detail { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class='container'>
+    <div class='card'>
+      <div class='header'>
+        <h1 style='margin:0;'>Patient Updated Booking</h1>
+        <p style='margin:5px 0 0 0;'>Reference: {$referenceId}</p>
+      </div>
+      
+      <h2>Updated Booking Details</h2>
+      <div class='detail'><strong>Patient:</strong> {$patientName}</div>
+      <div class='detail'><strong>Email:</strong> {$updated['email']}</div>
+      <div class='detail'><strong>Phone:</strong> {$updated['phone']}</div>
+      <div class='detail'><strong>Doctor:</strong> {$doctorName}</div>
+      <div class='detail'><strong>Clinic:</strong> {$clinicName}</div>
+      <div class='detail'><strong>Date:</strong> {$appointmentDate}</div>
+      <div class='detail'><strong>Time:</strong> {$appointmentTime}</div>
+      <div class='detail'><strong>Service:</strong> {$serviceName}</div>
+      
+      <p style='margin-top:20px; color:#6b7a90; font-size:14px;'>
+        This booking was updated by the patient via manage_booking.php<br>
+        Updated at: " . date('M j, Y g:i A') . "
+      </p>
+    </div>
+  </div>
+</body>
+</html>";
+    $clinicText = "Patient Updated Booking - Ref {$referenceId}\n\nPatient: {$patientName}\nEmail: {$updated['email']}\nPhone: {$updated['phone']}\nDoctor: {$doctorName}\nClinic: {$clinicName}\nDate: {$appointmentDate}\nTime: {$appointmentTime}\n\nUpdated by patient at " . date('M j, Y g:i A');
+    
+    $clinicResult = $emailService->sendClinicNotification($clinicSubject, $clinicHtml, $clinicText, $clinicEmail);
+    if ($clinicResult['success']) {
+      error_log('✅ Clinic email sent to: ' . $clinicEmail);
+    } else {
+      error_log('❌ Clinic email failed: ' . $clinicResult['message']);
+    }
+  }
+} catch (Exception $e) {
+  error_log('Email sending failed: ' . $e->getMessage());
+  // Continue even if email fails
+}
+
+// Redirect to success page (Base Version - server-side redirect, no JSON)
+header('Location: /SmileBrightbase/public/booking/manage_booking.html?ref=' . urlencode($referenceId) . '&updated=1');
+exit();
+
 ?>

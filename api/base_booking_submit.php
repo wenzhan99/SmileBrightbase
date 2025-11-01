@@ -1,6 +1,8 @@
 <?php
 // Base booking submit: processes standard POST form and renders an HTML confirmation page (no AJAX)
 
+require_once __DIR__ . '/config.php';
+
 // Security & headers
 ini_set('display_errors', '0');
 header('X-Content-Type-Options: nosniff');
@@ -82,14 +84,12 @@ $clinicLabelMap = [
 $serviceLabel = $serviceLabelMap[$service] ?? ucfirst($service);
 $clinicLabel  = $clinicLabelMap[$clinic] ?? ucfirst(str_replace('_',' ',$clinic));
 
-// Connect DB (use same connection style as other endpoints)
-$mysqli = @new mysqli('127.0.0.1', 'root', '', 'smilebright', 3306);
+// Check database connection
 if ($mysqli->connect_errno) {
   http_response_code(500);
   echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Database Error</title></head><body><h1>Database connection failed</h1></body></html>';
   exit();
 }
-$mysqli->set_charset('utf8mb4');
 
 // Insert booking row (basic subset of columns common in project)
 $stmt = $mysqli->prepare("INSERT INTO bookings (
@@ -106,7 +106,6 @@ if (!$stmt->execute()) {
   http_response_code(500);
   echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Database Error</title></head><body><h1>Failed to save booking</h1></body></html>';
   $stmt->close();
-  $mysqli->close();
   exit();
 }
 $stmt->close();
@@ -118,7 +117,6 @@ $stmt->execute();
 $result = $stmt->get_result();
 $row = $result->fetch_assoc() ?: [];
 $stmt->close();
-$mysqli->close();
 
 // Render server-generated confirmation page with a table
 echo '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1" />'
